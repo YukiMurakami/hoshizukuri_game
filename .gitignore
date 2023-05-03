@@ -1,3 +1,7 @@
 .coverage
 .python-version
 *.egg-info
+*.html
+*.xml
+__pycache__
+assets
