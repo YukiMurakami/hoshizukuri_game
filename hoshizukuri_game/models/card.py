@@ -11,6 +11,13 @@ class CardType(Enum):
     CELESTIAL = "celestial"
 
 
+class CardColor(Enum):
+    NEUTRAL = "neutral"
+    RED = "red"
+    BLUE = "blue"
+    GREEN = "green"
+
+
 class Card:
     """Card model class.
 
