@@ -151,10 +151,8 @@ class CardMoveStep(AbstractStep):
                 to_pile, card_id=self.card_ids[0]
             )
             self._after_process_callback(self.card_ids, self.uniq_ids, game)
-        next_steps = []
-        if self.from_pilename == PileName.SUPPLY:
-            next_steps = self.next_step_callback(
-                self.card_ids, self.uniq_ids, game)
+        next_steps = self.next_step_callback(
+            self.card_ids, self.uniq_ids, game)
         return next_steps
 
 
