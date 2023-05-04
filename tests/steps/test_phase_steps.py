@@ -3,12 +3,13 @@ from hoshizukuri_game.models.pile import Pile, PileName, PileType
 from hoshizukuri_game.steps.common.draw_step import DrawStep
 from hoshizukuri_game.steps.common.play_step import PlayStep
 from hoshizukuri_game.steps.phase_steps import (
+    OrbitAdvanceStep,
     PlayContinueStep,
     TurnStartStep,
     PrepareFirstDeckStep,
     PlaySelectStep,
 )
-from hoshizukuri_game.models.turn import Turn, TurnType
+from hoshizukuri_game.models.turn import Phase, Turn, TurnType
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.player import Player
 from hoshizukuri_game.utils.card_util import get_card_id
@@ -144,7 +145,7 @@ class TestPlaySelectStep:
         game = self.get_game([])
         game.choice = ""
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == []
+        assert get_step_classes(next_steps) == [OrbitAdvanceStep]
 
     def test_process_over_orbit(self, get_step_classes):
         step = PlaySelectStep(0)
@@ -157,7 +158,7 @@ class TestPlaySelectStep:
         game.choice = "0:play:9"
         game.players[0].tmp_orbit = 35
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == []
+        assert get_step_classes(next_steps) == [OrbitAdvanceStep]
 
     def test_process_created(self, get_step_classes):
         step = PlaySelectStep(0)
@@ -168,7 +169,7 @@ class TestPlaySelectStep:
         ])
         game.created = True
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == []
+        assert get_step_classes(next_steps) == [OrbitAdvanceStep]
 
 
 class TestPlayContinueStep:
@@ -206,3 +207,29 @@ class TestPlayContinueStep:
         assert get_step_classes(next_steps) == [
             PlaySelectStep
         ]
+
+
+class TestOrbitAdvanceStep:
+    def test_str(self):
+        step = OrbitAdvanceStep(0)
+        assert str(step) == "0:orbitadvance:0"
+
+    def test_process_1(self, get_step_classes):
+        step = OrbitAdvanceStep(0)
+        game = Game()
+        game.phase = Phase.PLAY
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.players[0].orbit = 15
+        game.players[1].orbit = 17
+        game.players[0].tmp_orbit = 17
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1)],
+                [Card(1, 2)]
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+        assert game.players[0].orbit == 17.1
+        assert game.phase == Phase.ORBIT

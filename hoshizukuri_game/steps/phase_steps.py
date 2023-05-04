@@ -95,11 +95,11 @@ class PlaySelectStep(AbstractStep):
         assert game.turn.player_id == self.player_id
         game.players[self.player_id].update_tmp_orbit(game)
         if game.players[self.player_id].tmp_orbit >= 35:
-            return []
+            return [OrbitAdvanceStep(self.player_id)]
         if game.players[self.player_id].pile[PileName.HAND].count <= 0:
-            return []
+            return [OrbitAdvanceStep(self.player_id)]
         if game.created:
-            return []
+            return [OrbitAdvanceStep(self.player_id)]
         candidates = self._create_candidates(game)
         if game.choice == "":
             self.candidates = candidates
@@ -188,3 +188,33 @@ class PlayContinueStep(AbstractStep):
                 DrawStep(self.player_id, self.depth, 4 - hand_count)
             ]
         return [PlaySelectStep(self.player_id)]
+
+
+class OrbitAdvanceStep(AbstractStep):
+    """
+    Orbit advance step.
+
+    Args:
+        player_id (int): turn player ID.
+    """
+    def __init__(self, player_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = 0
+
+    def __str__(self):
+        return "%d:orbitadvance:%d" % (self.depth, self.player_id)
+
+    def process(self, game: Game):
+        game.phase = Phase.ORBIT
+        game.players[self.player_id].update_tmp_orbit(game)
+        now_orbit = int(game.players[self.player_id].tmp_orbit)
+        add_float = 0
+        for player_id in range(len(game.players)):
+            if player_id != self.player_id:
+                enemy_orbit = int(game.players[player_id].orbit)
+                if enemy_orbit == now_orbit:
+                    add_float += 0.1
+        next_orbit = now_orbit + add_float
+        game.players[self.player_id].orbit = next_orbit
+        return []
