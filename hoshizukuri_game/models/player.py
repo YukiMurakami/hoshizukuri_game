@@ -3,6 +3,8 @@ This module defines the Player model.
 """
 from .pile import Pile, PileName, PileType
 from typing import Dict
+from .card import CardColor
+from ..utils.card_util import get_colors
 
 
 class Player:
@@ -50,3 +52,23 @@ class Player:
             "tmp_orbit": self.tmp_orbit,
             "pile": piles
         }
+
+    def update_tmp_orbit(self, game):
+        # check fields.
+        add_orbit = 0
+        for card_list in self.pile[PileName.FIELD].card_list:
+            if len(card_list) <= 0:
+                continue
+            color_check = {
+                CardColor.RED: False,
+                CardColor.BLUE: False,
+                CardColor.GREEN: False
+            }
+            for card_id in [n.id for n in card_list]:
+                for color in get_colors(card_id, game):
+                    color_check[color] = True
+            if (color_check[CardColor.RED] and color_check[CardColor.BLUE] and
+                    color_check[CardColor.GREEN]):
+                continue
+            add_orbit += 1
+        self.tmp_orbit = self.orbit + add_orbit

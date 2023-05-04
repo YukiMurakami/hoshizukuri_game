@@ -1,3 +1,4 @@
+from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.player import Player
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
 from hoshizukuri_game.models.card import Card
@@ -37,3 +38,29 @@ class TestPlayer:
                 "field": [["1-6", "1-7", "2-8"]]
             }
         }
+
+    def test_update_tmp_orbit(self):
+        player = Player(player_id=0)
+        player.pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [
+                    Card(card_id=8, uniq_id=6),
+                    Card(card_id=9, uniq_id=7),
+                    Card(card_id=11, uniq_id=8)
+                ],
+                [
+                    Card(card_id=1, uniq_id=9)
+                ],
+                [
+                    Card(card_id=9, uniq_id=10),
+                    Card(card_id=10, uniq_id=11)
+                ],
+                [],
+                []
+            ]
+        )
+        game = Game()
+        game.set_players([player, Player(1)])
+        player.orbit = 10
+        player.update_tmp_orbit(game)
+        assert player.tmp_orbit == 12
