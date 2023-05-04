@@ -1,13 +1,16 @@
 from hoshizukuri_game.models.card import Card
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
 from hoshizukuri_game.steps.common.draw_step import DrawStep
+from hoshizukuri_game.steps.common.gain_step import GainStep
 from hoshizukuri_game.steps.common.play_step import PlayStep
+from hoshizukuri_game.steps.common.starflake_step import AddStarflakeStep
 from hoshizukuri_game.steps.phase_steps import (
     OrbitAdvanceStep,
     PlayContinueStep,
     TurnStartStep,
     PrepareFirstDeckStep,
     PlaySelectStep,
+    GenerateSelectStep,
 )
 from hoshizukuri_game.models.turn import Phase, Turn, TurnType
 from hoshizukuri_game.models.game import Game
@@ -230,6 +233,58 @@ class TestOrbitAdvanceStep:
             ]
         )
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == []
+        assert get_step_classes(next_steps) == [GenerateSelectStep]
         assert game.players[0].orbit == 17.1
         assert game.phase == Phase.ORBIT
+
+
+class TestGenerateSelectStep:
+    def test_str(self):
+        step = GenerateSelectStep(0)
+        assert str(step) == "0:generateselect:0"
+
+    def test_process_1(self, get_step_classes, is_equal_candidates):
+        step = GenerateSelectStep(0)
+        game = Game()
+        game.phase = Phase.ORBIT
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.starflake = 8
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [GenerateSelectStep]
+        assert game.phase == Phase.GENERATE
+        assert is_equal_candidates(
+            next_steps[0].get_candidates(game),
+            [
+                "0:generate:3#0",
+                "0:generate:4#0",
+                "0:generate:0#0",
+            ]
+        )
+
+    def test_process_2(self, get_step_classes, is_equal_candidates):
+        step = GenerateSelectStep(0)
+        game = Game()
+        game.phase = Phase.ORBIT
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.starflake = 8
+        game.choice = "0:generate:4"
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            GainStep, AddStarflakeStep
+        ]
+        assert game.phase == Phase.GENERATE
+        assert next_steps[0].card_ids == [4]
+
+    def test_process_3(self, get_step_classes, is_equal_candidates):
+        step = GenerateSelectStep(0)
+        game = Game()
+        game.phase = Phase.ORBIT
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.starflake = 8
+        game.choice = "0:generate:0"
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+        assert game.phase == Phase.GENERATE

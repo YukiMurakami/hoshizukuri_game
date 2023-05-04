@@ -10,16 +10,24 @@ from ..models.turn import Turn
 from .abstract_step import AbstractStep
 from .common.play_step import PlayStep
 from .common.draw_step import DrawStep
+from .common.starflake_step import AddStarflakeStep
+from .common.gain_step import GainStep
 from ..models.turn import Phase
 from ..models.pile import PileName
 from ..models.card import CardColor
+from ..models.cost import Cost
+from ..models.card_condition import (
+    CardCondition,
+    get_match_card_ids
+)
 from ..utils.card_util import (
-    get_colors, ids2uniq_ids
+    get_colors, get_cost, ids2uniq_ids
 )
 from ..utils.other_util import (
     make_permutation
 )
 from ..utils.choice_util import (
+    cparsei,
     cparsell
 )
 from itertools import product
@@ -217,4 +225,52 @@ class OrbitAdvanceStep(AbstractStep):
                     add_float += 0.1
         next_orbit = now_orbit + add_float
         game.players[self.player_id].orbit = next_orbit
-        return []
+        return [GenerateSelectStep(self.player_id)]
+
+
+class GenerateSelectStep(AbstractStep):
+    """
+    Select generate card.
+
+    Args:
+        player_id (int): turn player ID.
+    """
+    def __init__(self, player_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = 0
+
+    def __str__(self):
+        return "%d:generateselect:%d" % (self.depth, self.player_id)
+
+    def process(self, game: Game):
+        game.phase = Phase.GENERATE
+        assert game.turn.player_id == self.player_id
+        candidates = self._create_candidates(game)
+        if game.choice == "":
+            self.candidates = candidates
+            return [self]
+        else:
+            self.candidates = []
+        player_id, command, card_id = cparsei(game.choice)
+        game.choice = ""
+        assert command in ["generate"]
+        assert player_id == self.player_id
+        if card_id == 0:
+            return []
+        cost = get_cost(card_id, game)
+        return [
+            GainStep(
+                self.player_id, self.depth, card_id,
+                to_pilename=PileName.HAND),
+            AddStarflakeStep(self.player_id, self.depth, cost.cost * -1)
+        ]
+
+    def _create_candidates(self, game: Game):
+        generate_list = get_match_card_ids(
+            game.supply,
+            CardCondition(le_cost=Cost(game.starflake)),
+            game, uniq_flag=True
+        )
+        generate_list += [0]  # pass
+        return ["%d:generate:%d" % (self.player_id, n) for n in generate_list]
