@@ -77,7 +77,8 @@ class TestGame:
                 11: "{11:10}",
                 12: "{12:10}",
                 13: "{13:10}"
-            }
+            },
+            "created": False,
         }
 
     def test_make_card(self):

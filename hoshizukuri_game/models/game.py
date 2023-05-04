@@ -31,6 +31,7 @@ class Game:
         players (List[Player]): List of players.
         coin (int): Now player's coin.
         turn (Turn): Now turn.
+        created (bool): True: Played "create" card.
         phase (Phase): Now phase.
         stack (List[AbstractStep]): Steps that is going to be processed.
         choice (str): Now player's choice.
@@ -42,6 +43,7 @@ class Game:
         self.players: List[Player] = []
         self.coin: int = 0
         self.turn: Turn = Turn(1, 0, 0, TurnType.NORMAL)
+        self.created: bool = False
         self.phase: Phase = Phase.TURN_START
         self.stack: List[AbstractStep] = []
         self.choice: str = ""
@@ -141,6 +143,7 @@ class Game:
             "coin": self.coin,
             "phase": self.phase.value,
             "players": [n.get_status_json() for n in self.players],
+            "created": self.created,
         }
         return data
 
