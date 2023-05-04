@@ -12,6 +12,7 @@ from .common.play_step import PlayStep
 from .common.draw_step import DrawStep
 from .common.starflake_step import AddStarflakeStep
 from .common.gain_step import GainStep
+from .common.discard_step import DiscardStep
 from ..models.turn import Phase
 from ..models.pile import PileName
 from ..models.card import CardColor
@@ -257,9 +258,10 @@ class GenerateSelectStep(AbstractStep):
         assert command in ["generate"]
         assert player_id == self.player_id
         if card_id == 0:
-            return []
+            return [CleanupStep(self.player_id)]
         cost = get_cost(card_id, game)
         return [
+            CleanupStep(self.player_id),
             GainStep(
                 self.player_id, self.depth, card_id,
                 to_pilename=PileName.HAND),
@@ -274,3 +276,34 @@ class GenerateSelectStep(AbstractStep):
         )
         generate_list += [0]  # pass
         return ["%d:generate:%d" % (self.player_id, n) for n in generate_list]
+
+
+class CleanupStep(AbstractStep):
+    """
+    cleanup step.
+
+    Args:
+        player_id (int): turn player ID.
+    """
+    def __init__(self, player_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = 0
+
+    def __str__(self):
+        return "%d:cleanup:%d" % (self.depth, self.player_id)
+
+    def process(self, game: Game):
+        game.phase = Phase.CLEAN_UP
+        steps = []
+        for card_list in reversed(game.players[
+                self.player_id].pile[PileName.FIELD].card_list):
+            steps.append(
+                DiscardStep(
+                    self.player_id, self.depth,
+                    card_ids=[n.id for n in card_list],
+                    uniq_ids=[n.uniq_id for n in card_list],
+                    from_pilename=PileName.FIELD
+                )
+            )
+        return steps

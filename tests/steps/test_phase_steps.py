@@ -1,5 +1,6 @@
 from hoshizukuri_game.models.card import Card
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
+from hoshizukuri_game.steps.common.discard_step import DiscardStep
 from hoshizukuri_game.steps.common.draw_step import DrawStep
 from hoshizukuri_game.steps.common.gain_step import GainStep
 from hoshizukuri_game.steps.common.play_step import PlayStep
@@ -11,6 +12,7 @@ from hoshizukuri_game.steps.phase_steps import (
     PrepareFirstDeckStep,
     PlaySelectStep,
     GenerateSelectStep,
+    CleanupStep,
 )
 from hoshizukuri_game.models.turn import Phase, Turn, TurnType
 from hoshizukuri_game.models.game import Game
@@ -272,10 +274,10 @@ class TestGenerateSelectStep:
         game.choice = "0:generate:4"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
-            GainStep, AddStarflakeStep
+            CleanupStep, GainStep, AddStarflakeStep
         ]
         assert game.phase == Phase.GENERATE
-        assert next_steps[0].card_ids == [4]
+        assert next_steps[1].card_ids == [4]
 
     def test_process_3(self, get_step_classes, is_equal_candidates):
         step = GenerateSelectStep(0)
@@ -286,5 +288,29 @@ class TestGenerateSelectStep:
         game.starflake = 8
         game.choice = "0:generate:0"
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == []
+        assert get_step_classes(next_steps) == [CleanupStep]
         assert game.phase == Phase.GENERATE
+
+
+class TestCleanupStep:
+    def test_str(self):
+        step = CleanupStep(0)
+        assert str(step) == "0:cleanup:0"
+
+    def test_process_1(self, get_step_classes, is_equal_candidates):
+        step = CleanupStep(0)
+        game = Game()
+        game.phase = Phase.GENERATE
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1)],
+                [Card(1, 2), Card(2, 3)]
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            DiscardStep, DiscardStep
+        ]
+        assert game.phase == Phase.CLEAN_UP
