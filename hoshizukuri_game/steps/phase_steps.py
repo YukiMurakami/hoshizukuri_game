@@ -306,4 +306,10 @@ class CleanupStep(AbstractStep):
                     from_pilename=PileName.FIELD
                 )
             )
-        return steps
+        # draw up to 4.
+        hand_count = game.players[self.player_id].pile[PileName.HAND].count
+        draw_steps = []
+        if hand_count < 4:
+            draw_steps = [DrawStep(
+                self.player_id, self.depth, 4 - hand_count)]
+        return draw_steps + steps

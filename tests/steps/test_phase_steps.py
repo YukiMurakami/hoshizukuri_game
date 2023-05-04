@@ -309,8 +309,14 @@ class TestCleanupStep:
                 [Card(1, 2), Card(2, 3)]
             ]
         )
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 4), Card(2, 5), Card(3, 6)
+            ]
+        )
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
-            DiscardStep, DiscardStep
+            DrawStep, DiscardStep, DiscardStep
         ]
+        next_steps[0].count == 1
         assert game.phase == Phase.CLEAN_UP
