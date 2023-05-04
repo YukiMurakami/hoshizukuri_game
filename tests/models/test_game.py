@@ -61,7 +61,7 @@ class TestGame:
             "coin": 0,
             "player_id": 0,
             "players": [{
-                "orbit": 0, "pile": {}, "player_id": 0}],
+                "orbit": 0, "tmp_orbit": 0, "pile": {}, "player_id": 0}],
             "phase": "turn_start",
             "trash": [],
             "turn": "1:0:normal:0",
