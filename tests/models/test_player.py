@@ -29,6 +29,7 @@ class TestPlayer:
         data = player.get_status_json()
         assert data == {
             "player_id": 1,
+            "orbit": 0,
             "pile": {
                 "deck": ["1-1", "1-2", "4-3"],
                 "hand": ["4-4", "4-5"],

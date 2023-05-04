@@ -13,6 +13,7 @@ class Player:
 
     Attributes:
         player_id (int): Player ID. 0 is the first player.
+        orbit (float): Orbital progress of this.
         pile (Dict[PileName, Pile]): Player piles.
         side_pile (Dict[str, SidePile]): Player side piles.
         card_pool (Pile): The card list that player has.
@@ -20,6 +21,7 @@ class Player:
     """
     def __init__(self, player_id: int):
         self.player_id = player_id
+        self.orbit: float = 0
         self.pile: Dict[PileName, Pile] = {
             PileName.HAND: Pile(PileType.LIST, card_list=[]),
             PileName.FIELD: Pile(PileType.LISTLIST, card_list=[]),
@@ -38,5 +40,6 @@ class Player:
                 ]
         return {
             "player_id": self.player_id,
+            "orbit": self.orbit,
             "pile": piles
         }
