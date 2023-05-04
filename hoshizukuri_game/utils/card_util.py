@@ -100,6 +100,19 @@ def get_expansion(card_id: int):
     return CardData().cardinfo[card_id]["expansion"]
 
 
+def get_vp(card_id: int):
+    """
+    Get vp with card ID.
+
+    Args:
+        card_id (int): Card ID.
+
+    Returns:
+        int: vp.
+    """
+    return CardData().cardinfo[card_id]["vp"]
+
+
 def get_types(card_id: int, game: Game = None):
     """
     Get card types with card ID.

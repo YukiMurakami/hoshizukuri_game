@@ -11,6 +11,7 @@ from hoshizukuri_game.utils.card_util import (
     get_count,
     is_create,
     get_colors,
+    get_vp,
 )
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.card import CardType, Card, CardColor
@@ -35,6 +36,10 @@ class TestCardUtil:
     def test_get_expansion(self):
         result = get_expansion(10)
         assert result == "Base"
+
+    def test_get_vp(self):
+        assert get_vp(12) == 3
+        assert get_vp(5) == 8
 
     def test_get_types(self):
         game = Game()
