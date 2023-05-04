@@ -22,7 +22,7 @@ class Player:
         self.player_id = player_id
         self.pile: Dict[PileName, Pile] = {
             PileName.HAND: Pile(PileType.LIST, card_list=[]),
-            PileName.FIELD: Pile(PileType.LIST, card_list=[]),
+            PileName.FIELD: Pile(PileType.LISTLIST, card_list=[]),
             PileName.DECK: Pile(PileType.LIST, card_list=[]),
             PileName.DISCARD: Pile(PileType.LIST, card_list=[]),
             PileName.LOOK: Pile(PileType.LIST, card_list=[]),
