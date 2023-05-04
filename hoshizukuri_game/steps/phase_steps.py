@@ -8,6 +8,8 @@ if TYPE_CHECKING:
     from ..models.game import Game
 from ..models.turn import Turn
 from .abstract_step import AbstractStep
+from .common.play_step import PlayStep
+from .common.draw_step import DrawStep
 from ..models.turn import Phase
 from ..models.pile import PileName
 from ..models.card import CardColor
@@ -42,6 +44,7 @@ class TurnStartStep(AbstractStep):
 
     def process(self, game: Game):
         game.phase = Phase.TURN_START
+        game.created = False
         game.turn = self.turn
         assert game.turn.player_id == self.player_id
         game.starflake = 0
@@ -90,9 +93,12 @@ class PlaySelectStep(AbstractStep):
     def process(self, game: Game):
         game.phase = Phase.PLAY
         assert game.turn.player_id == self.player_id
+        game.players[self.player_id].update_tmp_orbit(game)
         if game.players[self.player_id].tmp_orbit >= 35:
             return []
         if game.players[self.player_id].pile[PileName.HAND].count <= 0:
+            return []
+        if game.created:
             return []
         candidates = self._create_candidates(game)
         if game.choice == "":
@@ -110,10 +116,13 @@ class PlaySelectStep(AbstractStep):
                 game.players[self.player_id].pile[PileName.HAND],
                 play_ids, game
             )
-        steps = []
-        for play_id, uniq_id in zip(play_ids, uniq_ids):
-            pass
-        return steps
+        return [
+            PlayContinueStep(self.player_id),
+            PlayStep(
+                self.player_id, self.depth, play_ids, uniq_ids,
+                from_pilename=PileName.HAND
+            )
+        ]
 
     def _create_candidates(self, game: Game):
         command = "play"
@@ -153,3 +162,29 @@ class PlaySelectStep(AbstractStep):
         candidates = sorted(candidates)
         return ["%d:%s:%s" % (self.player_id, command, ",".join(
             [str(n) for n in cand])) for cand in candidates]
+
+
+class PlayContinueStep(AbstractStep):
+    """
+    Play continue step.
+
+    Args:
+        player_id (int): turn player ID.
+    """
+    def __init__(self, player_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = 0
+
+    def __str__(self):
+        return "%d:playcontinue:%d" % (self.depth, self.player_id)
+
+    def process(self, game: Game):
+        # draw up to 4.
+        hand_count = game.players[self.player_id].pile[PileName.HAND].count
+        if hand_count < 4:
+            return [
+                PlaySelectStep(self.player_id),
+                DrawStep(self.player_id, self.depth, 4 - hand_count)
+            ]
+        return [PlaySelectStep(self.player_id)]

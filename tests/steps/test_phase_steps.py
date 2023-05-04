@@ -1,6 +1,9 @@
 from hoshizukuri_game.models.card import Card
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
+from hoshizukuri_game.steps.common.draw_step import DrawStep
+from hoshizukuri_game.steps.common.play_step import PlayStep
 from hoshizukuri_game.steps.phase_steps import (
+    PlayContinueStep,
     TurnStartStep,
     PrepareFirstDeckStep,
     PlaySelectStep,
@@ -131,7 +134,10 @@ class TestPlaySelectStep:
         ])
         game.choice = "0:play:9"
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == []
+        assert get_step_classes(next_steps) == [
+            PlayContinueStep,
+            PlayStep
+        ]
 
     def test_process_no_hand(self, get_step_classes):
         step = PlaySelectStep(0)
@@ -147,7 +153,56 @@ class TestPlaySelectStep:
             Card(get_card_id("eruption"), 1),
             Card(get_card_id("stardust"), 2),
         ])
+        game.players[0].orbit = 35
         game.choice = "0:play:9"
         game.players[0].tmp_orbit = 35
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
+
+    def test_process_created(self, get_step_classes):
+        step = PlaySelectStep(0)
+        game = self.get_game([
+            Card(get_card_id("flame"), 0),
+            Card(get_card_id("eruption"), 1),
+            Card(get_card_id("stardust"), 2),
+        ])
+        game.created = True
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+
+
+class TestPlayContinueStep:
+    def test_str(self):
+        step = PlayContinueStep(0)
+        assert str(step) == "0:playcontinue:0"
+
+    def test_process_1(self, get_step_classes):
+        step = PlayContinueStep(0)
+        game = Game()
+        game.set_players([Player(0)])
+        game.set_supply([])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2)
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlaySelectStep, DrawStep
+        ]
+        assert next_steps[1].count == 2
+
+    def test_process_2(self, get_step_classes):
+        step = PlayContinueStep(0)
+        game = Game()
+        game.set_players([Player(0)])
+        game.set_supply([])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(1, 3), Card(2, 4)
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlaySelectStep
+        ]
