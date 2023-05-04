@@ -20,11 +20,11 @@ class TestPlayer:
             ]
         )
         player.pile[PileName.FIELD] = Pile(
-            PileType.LIST, card_list=[
+            PileType.LISTLIST, card_list=[[
                 Card(card_id=1, uniq_id=6),
                 Card(card_id=1, uniq_id=7),
                 Card(card_id=2, uniq_id=8)
-            ]
+            ]]
         )
         data = player.get_status_json()
         assert data == {
@@ -34,6 +34,6 @@ class TestPlayer:
             "pile": {
                 "deck": ["1-1", "1-2", "4-3"],
                 "hand": ["4-4", "4-5"],
-                "field": ["1-6", "1-7", "2-8"]
+                "field": [["1-6", "1-7", "2-8"]]
             }
         }

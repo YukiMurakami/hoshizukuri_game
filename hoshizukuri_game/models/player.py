@@ -40,6 +40,10 @@ class Player:
                 piles[pilename.value] = [
                     str(n) for n in pile.card_list
                 ]
+                if pile.type == PileType.LISTLIST:
+                    piles[pilename.value] = [[str(
+                        n) for n in card_list] for card_list in pile.card_list
+                    ]
         return {
             "player_id": self.player_id,
             "orbit": self.orbit,
