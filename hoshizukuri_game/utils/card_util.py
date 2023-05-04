@@ -103,7 +103,6 @@ def get_expansion(card_id: int):
 def get_types(card_id: int, game: Game = None):
     """
     Get card types with card ID.
-    If pileflag is True, this returns pile types. (Randomizer's card type)
 
     Args:
         card_id (int): Card ID.
@@ -114,6 +113,21 @@ def get_types(card_id: int, game: Game = None):
         List[CardType]: List of card types.
     """
     return CardData().cardinfo[card_id]["type"]
+
+
+def get_colors(card_id: int, game: Game = None):
+    """
+    Get card colors with card ID.
+
+    Args:
+        card_id (int): Card ID.
+        game (Game, optional): Game. This is for checking game status.
+            (Inheritance, .etc)
+
+    Returns:
+        List[CardType]: List of card types.
+    """
+    return CardData().cardinfo[card_id]["color"]
 
 
 def is_create(card_id: int):
@@ -142,14 +156,6 @@ def id2uniq_id(pile: Pile, card_id: int, game: Game):
 
     Returns:
         int: Unique card ID.
-
-    Note:
-        - When game has log_manager, need to process hidden cards.
-        - NO hidden cards are processed before hidden cards.
-            - If not found, complete from card pools.
-        - About hidden cards, the NO hidden cards are no longer guaranteed.
-            - For each card IDs, it should be 9999 (hidden card id).
-            - pile=[1,2,3,3], card_id=9999 -> pile will be [9999,9999,9999,3]
     """
     uniq_ids = ids2uniq_ids(pile, [card_id], game)
     return uniq_ids[0]

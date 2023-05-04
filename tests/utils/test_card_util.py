@@ -10,9 +10,10 @@ from hoshizukuri_game.utils.card_util import (
     get_cost,
     get_count,
     is_create,
+    get_colors,
 )
 from hoshizukuri_game.models.game import Game
-from hoshizukuri_game.models.card import CardType, Card
+from hoshizukuri_game.models.card import CardType, Card, CardColor
 from hoshizukuri_game.models.pile import Pile, PileType
 from hoshizukuri_game.models.cost import Cost
 import pytest
@@ -39,6 +40,11 @@ class TestCardUtil:
         game = Game()
         result = get_types(get_card_id("satellite"), game)
         assert result == [CardType.STAR, CardType.INITIAL]
+
+    def test_get_colors(self):
+        game = Game()
+        result = get_colors(get_card_id("flame"), game)
+        assert result == [CardColor.RED]
 
     def test_id2uniqid_1(self):
         card_id = 8
