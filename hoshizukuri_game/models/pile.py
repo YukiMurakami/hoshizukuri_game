@@ -153,10 +153,19 @@ class Pile:
 
         Args:
             card (Card): a card will be pushed into.
-            index (int): position.
-            sub_index (int): sub index for PileType.LISTLIST
+            index (int): position. -1 is the last.
+            sub_index (int): sub index for PileType.LISTLIST. -1 is the last.
         """
         if self.type != PileType.NUMBER:
+            if index == -1:
+                index = len(self.card_list)
+            if self.type == PileType.LISTLIST:
+                assert sub_index is not None
+                if sub_index == -1:
+                    if index == len(self.card_list):
+                        sub_index = 0
+                    else:
+                        sub_index = len(self.card_list[index])
             assert index >= 0 and index <= len(self.card_list)
         if self.type == PileType.LIST:
             self.card_list.insert(index, card)

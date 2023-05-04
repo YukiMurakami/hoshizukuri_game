@@ -240,6 +240,53 @@ class TestPile:
         assert str(pile) == "[[2-1],[2-2,2-3,8-1,3-4]]"
         assert pile.count == 5
 
+    def test_insert_5(self):
+        card_list = [
+            Card(card_id=2, uniq_id=1),
+            Card(card_id=2, uniq_id=2),
+            Card(card_id=3, uniq_id=3),
+        ]
+        pile = Pile(PileType.LIST, card_list=card_list)
+        card = Card(card_id=7, uniq_id=4)
+        pile.insert(card, -1)
+        assert pile.pile_card_id == 2
+        assert pile.count == 4
+        assert str(pile) == "[2-1,2-2,3-3,7-4]"
+
+    def test_insert_6(self):
+        card_list = [
+            [
+                Card(card_id=2, uniq_id=1),
+            ],
+            [
+                Card(card_id=2, uniq_id=2),
+                Card(card_id=2, uniq_id=3),
+                Card(card_id=3, uniq_id=4),
+            ]
+        ]
+        pile = Pile(PileType.LISTLIST, card_list=card_list)
+        card = Card(card_id=8, uniq_id=1)
+        pile.insert(card, -1, -1)
+        assert str(pile) == "[[2-1],[2-2,2-3,3-4],[8-1]]"
+        assert pile.count == 5
+
+    def test_insert_7(self):
+        card_list = [
+            [
+                Card(card_id=2, uniq_id=1),
+            ],
+            [
+                Card(card_id=2, uniq_id=2),
+                Card(card_id=2, uniq_id=3),
+                Card(card_id=3, uniq_id=4),
+            ]
+        ]
+        pile = Pile(PileType.LISTLIST, card_list=card_list)
+        card = Card(card_id=8, uniq_id=1)
+        pile.insert(card, 1, -1)
+        assert str(pile) == "[[2-1],[2-2,2-3,3-4,8-1]]"
+        assert pile.count == 5
+
     def test_remove_at_1(self):
         card_list = [
             Card(card_id=2, uniq_id=1),
