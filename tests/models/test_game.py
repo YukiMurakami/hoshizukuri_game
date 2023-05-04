@@ -155,3 +155,53 @@ class TestGame:
         game.move_card(game.supply[8], discard, card_id=8, reverse=True)
         assert str(game.supply[8]) == "{8:9}"
         assert str(discard) == "[8-1,1-1,1-2,4-3]"
+
+    def test_move_card_5(self):
+        game = Game()
+        game.set_players([Player(0)])
+        game.set_supply([n for n in range(6, 14)])
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1), Card(1, 2), Card(4, 3)],
+                [Card(1, 4)]
+            ]
+        )
+        field = game.players[0].pile[PileName.FIELD]
+        discard = game.players[0].pile[PileName.DISCARD]
+        game.move_card(field, discard, uniq_ids=[1, 2])
+        assert str(field) == "[[4-3],[1-4]]"
+        assert str(discard) == "[1-1,1-2]"
+
+    def test_move_card_6(self):
+        game = Game()
+        game.set_players([Player(0)])
+        game.set_supply([n for n in range(6, 14)])
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1), Card(1, 2), Card(4, 3)],
+                [Card(1, 4)]
+            ]
+        )
+        field = game.players[0].pile[PileName.FIELD]
+        discard = game.players[0].pile[PileName.DISCARD]
+        game.move_card(field, discard, uniq_ids=[1, 2], reverse=True)
+        assert str(field) == "[[4-3],[1-4]]"
+        assert str(discard) == "[1-2,1-1]"
+
+    def test_move_card_7(self):
+        game = Game()
+        game.set_players([Player(0)])
+        game.set_supply([n for n in range(6, 14)])
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1), Card(1, 2), Card(4, 3)],
+                [Card(1, 4)]
+            ]
+        )
+        field = game.players[0].pile[PileName.FIELD]
+        game.move_card(
+            game.supply[3],
+            field,
+            card_id=3, orbit_index=1)
+        assert str(game.supply[3]) == "{3:11}"
+        assert str(field) == "[[1-1,1-2,4-3],[1-4,3-1]]"

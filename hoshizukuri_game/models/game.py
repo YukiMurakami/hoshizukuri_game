@@ -193,12 +193,27 @@ class Game:
                 move_card = from_pile.card_list[index]
                 moved_uniq_ids.append(move_card.uniq_id)
                 from_pile.remove_at(index)
+                if to_pile.type == PileType.LISTLIST:
+                    to_pile.insert(move_card, orbit_index, -1)
+                else:
+                    if reverse:
+                        to_pile.insert(move_card, 0)
+                    else:
+                        to_pile.push(move_card)
+        elif from_pile.type == PileType.LISTLIST:
+            assert uniq_ids is not None
+            for uniq_id in uniq_ids:
+                index = from_pile.index(uniq_id=uniq_id)
+                assert index != -1
+                sub_index = [n.uniq_id for n in from_pile.card_list[
+                    index]].index(uniq_id)
+                assert sub_index != -1
+                move_card = from_pile.card_list[index][sub_index]
+                from_pile.remove_at(index, sub_index)
                 if reverse:
                     to_pile.insert(move_card, 0)
                 else:
                     to_pile.push(move_card)
-        elif from_pile.type == PileType.LISTLIST:
-            pass
         else:
             assert card_id is not None
             assert from_pile.pile_card_id == card_id
@@ -206,8 +221,11 @@ class Game:
             move_card = self.make_card(card_id)
             moved_uniq_ids.append(move_card.uniq_id)
             from_pile.remove_at(0)
-            if reverse:
-                to_pile.insert(move_card, 0)
+            if to_pile.type == PileType.LISTLIST:
+                to_pile.insert(move_card, orbit_index, -1)
             else:
-                to_pile.push(move_card)
+                if reverse:
+                    to_pile.insert(move_card, 0)
+                else:
+                    to_pile.push(move_card)
         return moved_uniq_ids
