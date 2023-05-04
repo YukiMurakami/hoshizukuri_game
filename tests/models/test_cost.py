@@ -11,24 +11,24 @@ class TestCost:
         c = Cost(0)
         assert str(c) == "0"
 
-    def test_compare_coin_lt(self):
+    def test_compare_starflake_lt(self):
         assert Cost(2) < Cost(4)
 
-    def test_compare_coin_gt(self):
+    def test_compare_starflake_gt(self):
         assert Cost(5) > Cost(4)
 
-    def test_compare_coin_le(self):
+    def test_compare_starflake_le(self):
         assert Cost(2) <= Cost(4)
         assert Cost(4) <= Cost(4)
 
-    def test_compare_coin_ge(self):
+    def test_compare_starflake_ge(self):
         assert Cost(5) >= Cost(4)
         assert Cost(5) >= Cost(5)
 
-    def test_compare_coin_eq(self):
+    def test_compare_starflake_eq(self):
         assert Cost(4) == Cost(4)
 
-    def test_compare_coin_not_eq(self):
+    def test_compare_starflake_not_eq(self):
         assert Cost(4) != Cost(5)
 
     def test_compare_error1(self):

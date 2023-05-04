@@ -29,7 +29,7 @@ class Game:
         supply (Dict[int, Pile]): Supply piles. Key is pile_card_id.
         trash (Pile): Trash pile.
         players (List[Player]): List of players.
-        coin (int): Now player's coin.
+        starflake (int): Now player's starflake.
         turn (Turn): Now turn.
         created (bool): True: Played "create" card.
         phase (Phase): Now phase.
@@ -41,7 +41,7 @@ class Game:
         self.supply: Dict[int, Pile] = {}
         self.trash: Pile = Pile(PileType.LIST, card_list=[])
         self.players: List[Player] = []
-        self.coin: int = 0
+        self.starflake: int = 0
         self.turn: Turn = Turn(1, 0, 0, TurnType.NORMAL)
         self.created: bool = False
         self.phase: Phase = Phase.TURN_START
@@ -140,7 +140,7 @@ class Game:
             "trash": ["%d-%d" % (
                 n.id, n.uniq_id) for n in self.trash.card_list],
             "turn": str(self.turn),
-            "coin": self.coin,
+            "starflake": self.starflake,
             "phase": self.phase.value,
             "players": [n.get_status_json() for n in self.players],
             "created": self.created,
@@ -149,7 +149,8 @@ class Game:
 
     def move_card(
             self, from_pile: Pile, to_pile: Pile, card_id: int = None,
-            uniq_ids: List[int] = None, reverse: bool = False):
+            uniq_ids: List[int] = None, reverse: bool = False,
+            orbit_index: int = None):
         """
         Move cards between piles.
 
@@ -159,6 +160,8 @@ class Game:
             card_id (int, Optional): move card ID.
             uniq_ids (List[int], Optional): move card unique IDs.
             reverse (bool, Optional): True is for push from the top of pile.
+            orbit_index (int, Optional):
+                This index is used for moving to PileType.LISTLIST.
 
         Note:
             When PileType of from_pile is LIST, use uniq_ids.
@@ -170,11 +173,17 @@ class Game:
             from = [1,2,3], to = [4,5,6] > to = [4,5,6,1,2,3]
             When reverse is True,
             from = [1,2,3], to = [4,5,6] > to = [3,2,1,4,5,6]
+
+            When move cards into LISTLIST type, use orbit_index.
+            from = [1], to = [[4],[6]], orbit_index = 1 > to = [[4],[6,1]]
+            from = [1], to = [[4],[6]], orbit_index = 2 > to = [[4],[6],[1]]
         Returns:
             List[int]: Unique IDs of moved cards.
         """
         assert card_id is not None or uniq_ids is not None
         assert card_id is None or uniq_ids is None
+        if to_pile.type == PileType.LISTLIST:
+            assert orbit_index is not None
         moved_uniq_ids = []
         if from_pile.type == PileType.LIST:
             assert uniq_ids is not None

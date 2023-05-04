@@ -7,10 +7,10 @@ class Cost:
     """Cost model class.
 
     Args:
-        cost (int): The coin cost.
+        cost (int): The starflake cost.
 
     Attributes:
-        __cost (int): The coin cost.
+        __cost (int): The starflake cost.
 
     Examples:
         Can compare between Costs or add.
@@ -44,7 +44,7 @@ class Cost:
     @property
     def cost(self):
         """
-        The coin cost.
+        The starflake cost.
         """
         return self.__cost
 

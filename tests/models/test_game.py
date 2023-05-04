@@ -58,7 +58,7 @@ class TestGame:
         status = game.get_status_json()
         assert status == {
             "num_player": 1,
-            "coin": 0,
+            "starflake": 0,
             "player_id": 0,
             "players": [{
                 "orbit": 0, "tmp_orbit": 0, "pile": {}, "player_id": 0}],

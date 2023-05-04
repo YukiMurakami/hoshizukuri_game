@@ -44,7 +44,7 @@ class TurnStartStep(AbstractStep):
         game.phase = Phase.TURN_START
         game.turn = self.turn
         assert game.turn.player_id == self.player_id
-        game.coin = 0
+        game.starflake = 0
         return [PlaySelectStep(self.player_id)]
 
 
