@@ -13,6 +13,7 @@ from hoshizukuri_game.steps.phase_steps import (
     PlaySelectStep,
     GenerateSelectStep,
     CleanupStep,
+    UpdateTurnStep,
 )
 from hoshizukuri_game.models.turn import Phase, Turn, TurnType
 from hoshizukuri_game.models.game import Game
@@ -316,7 +317,46 @@ class TestCleanupStep:
         )
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
-            DrawStep, DiscardStep, DiscardStep
+            UpdateTurnStep, DrawStep, DiscardStep, DiscardStep
         ]
-        next_steps[0].count == 1
+        next_steps[1].count == 1
         assert game.phase == Phase.CLEAN_UP
+
+
+class TestUpdateTurnStep:
+    def test_str(self):
+        step = UpdateTurnStep(0)
+        assert str(step) == "0:updateturn:0"
+
+    def test_process_1(self, get_step_classes, is_equal_candidates):
+        step = UpdateTurnStep(0)
+        game = Game()
+        game.phase = Phase.CLEAN_UP
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.players[0].orbit = 14.1
+        game.players[1].orbit = 14
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            TurnStartStep
+        ]
+        next_steps[0].player_id == 0
+        assert game.phase == Phase.TURN_END
+
+    def test_process_2(self, get_step_classes, is_equal_candidates):
+        step = UpdateTurnStep(0)
+        game = Game()
+        game.phase = Phase.CLEAN_UP
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.turn = Turn(1, 1, 0, TurnType.NORMAL)
+        game.players[0].orbit = 13
+        game.players[1].orbit = 14
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            TurnStartStep
+        ]
+        next_steps[0].player_id == 1
+        assert game.phase == Phase.TURN_END
+        assert next_steps[0].turn.turn == 2
+        assert next_steps[0].turn.uniq_turn == 2

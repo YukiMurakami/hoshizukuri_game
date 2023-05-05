@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..models.game import Game
-from ..models.turn import Turn
+from ..models.turn import Turn, TurnType
 from .abstract_step import AbstractStep
 from .common.play_step import PlayStep
 from .common.draw_step import DrawStep
@@ -312,4 +312,36 @@ class CleanupStep(AbstractStep):
         if hand_count < 4:
             draw_steps = [DrawStep(
                 self.player_id, self.depth, 4 - hand_count)]
-        return draw_steps + steps
+        return [UpdateTurnStep(self.player_id)] + draw_steps + steps
+
+
+class UpdateTurnStep(AbstractStep):
+    """
+    Update turn step.
+
+    Args:
+        player_id (int): now turn player ID.
+    """
+    def __init__(self, player_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = 0
+
+    def __str__(self):
+        return "%d:updateturn:%d" % (self.depth, self.player_id)
+
+    def process(self, game: Game):
+        game.phase = Phase.TURN_END
+        next_turn = game.turn.turn + 1
+        next_uniq_turn = game.turn.uniq_turn + 1
+        # next player is who has hewest orbit.
+        next_player_id = 0
+        min_orbit = 10000
+        for player_id in range(len(game.players)):
+            orbit = game.players[player_id].orbit
+            if min_orbit > orbit:
+                min_orbit = orbit
+                next_player_id = player_id
+        turn = Turn(
+            next_turn, next_uniq_turn, next_player_id, TurnType.NORMAL)
+        return [TurnStartStep(next_player_id, turn)]
