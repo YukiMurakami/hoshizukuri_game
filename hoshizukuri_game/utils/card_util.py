@@ -11,6 +11,7 @@ from enum import Enum
 import os
 import yaml
 from ..models.cost import Cost
+from ..models.pile import PileType
 
 
 class CardType(Enum):
@@ -214,9 +215,12 @@ def ids2uniq_ids(pile: Pile, card_ids: List[int], game: Game):
     """
     result = []
     already_uniq_ids = []
+    card_list = pile.card_list
+    if pile.type == PileType.LISTLIST:
+        card_list = pile.card_list[-1]
     for card_id in card_ids:
         hit = False
-        for card in pile.card_list:
+        for card in card_list:
             if card.id == card_id and card.uniq_id not in already_uniq_ids:
                 result.append(card.uniq_id)
                 already_uniq_ids.append(card.uniq_id)
@@ -241,8 +245,11 @@ def ids2cards(pile: Pile, card_ids: List[int], game: Game) -> List[Card]:
     """
     uniq_ids = ids2uniq_ids(pile, card_ids, game)
     result = []
+    card_list = pile.card_list
+    if pile.type == PileType.LISTLIST:
+        card_list = pile.card_list[-1]
     for uniq_id in uniq_ids:
-        for card in pile.card_list:
+        for card in card_list:
             if card.uniq_id == uniq_id:
                 result.append(card)
                 break

@@ -97,12 +97,22 @@ class TestCardUtil:
         with pytest.raises(Exception):
             ids2uniq_ids(pile, card_ids, game)
 
+    def test_ids2uniqids_3(self):
+        card_ids = [8, 9]
+        pile = Pile(PileType.LISTLIST, card_list=[
+            [Card(4, 0), Card(4, 1), Card(1, 2)],
+            [Card(8, 3), Card(8, 4), Card(9, 5)]
+        ])
+        game = Game()
+        uniq_ids = ids2uniq_ids(pile, card_ids, game)
+        assert uniq_ids == [3, 5]
+
     def test_get_cost_1(self):
         game = Game()
         cost = get_cost(get_card_id("kousei"), game)
         assert cost == Cost(10)
 
-    def test_ids2cards(self):
+    def test_ids2cards_1(self):
         pile = Pile(PileType.LIST, card_list=[
             Card(1, 1), Card(1, 2), Card(2, 3), Card(1, 4)
         ])
@@ -111,6 +121,18 @@ class TestCardUtil:
         assert len(cards) == 2
         assert cards[0].id == 1
         assert cards[0].uniq_id == 1
+        assert cards[1].id == 2
+        assert cards[1].uniq_id == 3
+
+    def test_ids2cards_2(self):
+        pile = Pile(PileType.LISTLIST, card_list=[
+            [Card(1, 1)], [Card(1, 2), Card(2, 3), Card(1, 4)]
+        ])
+        game = Game()
+        cards = ids2cards(pile, card_ids=[1, 2], game=game)
+        assert len(cards) == 2
+        assert cards[0].id == 1
+        assert cards[0].uniq_id == 2
         assert cards[1].id == 2
         assert cards[1].uniq_id == 3
 
