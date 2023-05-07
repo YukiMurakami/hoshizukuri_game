@@ -299,7 +299,7 @@ def select_process(
                 uniq_ids=uniq_ids,
             )
         ] + previous_step_callback(card_ids, uniq_ids, game)
-    if game.choice == "":
+    if game.choice == "" or game.choice not in candidates:
         source_step.candidates = candidates
         return [source_step]
     else:

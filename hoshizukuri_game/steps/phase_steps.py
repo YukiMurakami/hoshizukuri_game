@@ -111,7 +111,7 @@ class PlaySelectStep(AbstractStep):
         if game.created:
             return [OrbitAdvanceStep(self.player_id)]
         candidates = self._create_candidates(game)
-        if game.choice == "":
+        if game.choice == "" or game.choice not in candidates:
             self.candidates = candidates
             return [self]
         else:
@@ -195,7 +195,7 @@ class PlayCardSelectStep(AbstractStep):
             return [PlayContinueStep(self.player_id)]
         if len(candidates) == 1:
             game.choice = candidates[0]
-        if game.choice == "":
+        if game.choice == "" or game.choice not in candidates:
             self.candidates = candidates
             return [self]
         else:
@@ -303,7 +303,7 @@ class GenerateSelectStep(AbstractStep):
         game.phase = Phase.GENERATE
         assert game.turn.player_id == self.player_id
         candidates = self._create_candidates(game)
-        if game.choice == "":
+        if game.choice == "" or game.choice not in candidates:
             self.candidates = candidates
             return [self]
         else:
