@@ -12,6 +12,7 @@ from hoshizukuri_game.utils.card_util import (
     is_create,
     get_colors,
     get_vp,
+    get_starflake,
 )
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.card import CardType, Card, CardColor
@@ -40,6 +41,10 @@ class TestCardUtil:
     def test_get_vp(self):
         assert get_vp(24) == 3
         assert get_vp(5) == 8
+
+    def test_get_starflake(self):
+        assert get_starflake(25) == 0
+        assert get_starflake(2) == 2
 
     def test_get_types(self):
         game = Game()
