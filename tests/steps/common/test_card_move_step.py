@@ -64,14 +64,6 @@ class TestCardMoveStep:
         step = AbstractStep()
         return [step]
 
-    def test_constractor_1(self):
-        with pytest.raises(Exception):
-            CardMoveStep(
-                player_id=0, depth=0,
-                from_pilename=PileName.HAND,
-                to_pilename=PileName.HAND
-            )
-
     def test_constractor_2(self):
         with pytest.raises(Exception):
             CardMoveStep(

@@ -63,10 +63,6 @@ class CardMoveStep(AbstractStep):
         self.next_step_callback = next_step_callback
         if self.next_step_callback is None:
             self.next_step_callback = self._default_callback
-        if from_pilename == to_pilename:
-            raise Exception(
-                "from_pilename and to_pilename should "
-                "not be the same in CardMoveStep.")
         if from_pilename == PileName.DECK and count is None:
             raise Exception(
                 "count is required for from DECK Pile."
