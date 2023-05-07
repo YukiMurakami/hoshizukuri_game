@@ -101,6 +101,19 @@ def get_original_name(card_id: int):
     return CardData().cardinfo[card_id]["orgname"]
 
 
+def get_japanese_name(card_id: int):
+    """
+    Get card japanese name (without normalize) with card ID.
+
+    Args:
+        card_id (int): Card ID.
+
+    Returns:
+        str: Card original name.
+    """
+    return CardData().cardinfo[card_id]["japanese"]
+
+
 def get_expansion(card_id: int):
     """
     Get expansion with card ID.

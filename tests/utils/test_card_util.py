@@ -13,6 +13,7 @@ from hoshizukuri_game.utils.card_util import (
     get_colors,
     get_vp,
     get_starflake,
+    get_japanese_name,
     CardType, CardColor
 )
 from hoshizukuri_game.models.game import Game
@@ -191,6 +192,9 @@ class TestCardUtil:
 
     def test_get_original_name(self):
         assert get_original_name(1) == "Hoshikuzu"
+
+    def test_get_japanese_name(self):
+        assert get_japanese_name(1) == "星屑"
 
     def test_is_create_1(self):
         assert is_create(1) is False
