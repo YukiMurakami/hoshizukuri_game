@@ -21,13 +21,14 @@ from ..models.card_condition import (
     get_match_card_ids
 )
 from ..utils.card_util import (
-    get_colors, get_cost, ids2uniq_ids, CardColor
+    get_colors, get_cost, id2uniq_id, ids2uniq_ids, CardColor
 )
 from ..utils.other_util import (
-    make_permutation
+    make_combination
 )
 from ..utils.choice_util import (
     cparsei,
+    cparseii,
     cparsell
 )
 from ..utils.kingdom_step_util import get_kingdom_steps
@@ -117,7 +118,7 @@ class PlaySelectStep(AbstractStep):
             self.candidates = []
         player_id, command, play_ids, uniq_ids = cparsell(game.choice)
         game.choice = ""
-        assert command in ["play"]
+        assert command in ["playset"]
         assert player_id == self.player_id
         assert len(play_ids) > 0
         if uniq_ids == []:
@@ -126,15 +127,15 @@ class PlaySelectStep(AbstractStep):
                 play_ids, game
             )
         return [
-            PlayContinueStep(self.player_id),
+            PlayCardSelectStep(self.player_id),
             PlayStep(
                 self.player_id, self.depth, play_ids, uniq_ids,
-                from_pilename=PileName.HAND
+                from_pilename=PileName.HAND, process_effect=False
             )
         ]
 
     def _create_candidates(self, game: Game):
-        command = "play"
+        command = "playset"
         candidates = []
         # only one play
         for card in game.players[self.player_id].pile[PileName.HAND].card_list:
@@ -151,7 +152,7 @@ class PlaySelectStep(AbstractStep):
                     PileName.HAND].card_list:
                 if color in get_colors(card.id, game):
                     same_color_list[color].append(card.id)
-            perms = make_permutation(
+            perms = make_combination(
                 same_color_list[color], len(same_color_list[color]), True)
             for perm in perms:
                 if len(perm) > 0 and perm not in candidates:
@@ -163,14 +164,68 @@ class PlaySelectStep(AbstractStep):
             list(set(same_color_list[CardColor.GREEN]))
         ))
         for color_3 in color_3s:
-            perms = make_permutation(color_3, 3, False)
-            for perm in perms:
-                if perm not in candidates:
-                    candidates.append(perm)
+            perm = sorted(list(color_3))
+            if perm not in candidates:
+                candidates.append(perm)
 
         candidates = sorted(candidates)
         return ["%d:%s:%s" % (self.player_id, command, ",".join(
             [str(n) for n in cand])) for cand in candidates]
+
+
+class PlayCardSelectStep(AbstractStep):
+    """
+    Select card to play from card set in field.
+
+    Args:
+        player_id (int): turn player ID.
+    """
+    def __init__(self, player_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = 0
+        self.played_ids_and_uniq_ids = []
+
+    def __str__(self):
+        return "%d:playcardselect:%d" % (self.depth, self.player_id)
+
+    def process(self, game: Game):
+        candidates = self._create_candidates(game)
+        if len(candidates) == 0:
+            return [PlayContinueStep(self.player_id)]
+        if len(candidates) == 1:
+            game.choice = candidates[0]
+        if game.choice == "":
+            self.candidates = candidates
+            return [self]
+        else:
+            self.candidates = []
+        player_id, command, play_id, uniq_id = cparseii(game.choice)
+        game.choice = ""
+        assert command in ["play"]
+        assert player_id == self.player_id
+        if uniq_id == -1:
+            uniq_id = id2uniq_id(
+                game.players[self.player_id].pile[
+                    PileName.FIELD],
+                play_id, game
+            )
+        self.played_ids_and_uniq_ids.append([play_id, uniq_id])
+        return [
+            self,
+            PlayStep(
+                self.player_id, self.depth, [play_id], [uniq_id],
+                from_pilename=PileName.FIELD, process_effect=True
+            )
+        ]
+
+    def _create_candidates(self, game: Game):
+        rest_id_uniq_ids = [[n.id, n.uniq_id] for n in game.players[
+            self.player_id].pile[PileName.FIELD].card_list[-1]]
+        for id_uniq_id in self.played_ids_and_uniq_ids:
+            rest_id_uniq_ids.remove(id_uniq_id)
+        return ["%d:play:%d" % (
+            self.player_id, n[0]) for n in rest_id_uniq_ids]
 
 
 class PlayContinueStep(AbstractStep):

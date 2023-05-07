@@ -9,6 +9,7 @@ from hoshizukuri_game.steps.phase_steps import (
     GameFinishStep,
     OrbitAdvanceStep,
     PlayContinueStep,
+    PlayCardSelectStep,
     TurnStartStep,
     PrepareFirstDeckStep,
     PlaySelectStep,
@@ -88,11 +89,11 @@ class TestPlaySelectStep:
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:play:%d#0" % get_card_id("hoshikuzu"),
-                "0:play:%d#0" % get_card_id("funka"),
-                "0:play:%d#0" % get_card_id("honow"),
-                "0:play:%d,%d#0" % (get_card_id("funka"), get_card_id("honow")),
-                "0:play:%d,%d#0" % (get_card_id("honow"), get_card_id("funka"))
+                "0:playset:%d#0" % get_card_id("hoshikuzu"),
+                "0:playset:%d#0" % get_card_id("funka"),
+                "0:playset:%d#0" % get_card_id("honow"),
+                "0:playset:%d,%d#0" % (
+                    get_card_id("honow"), get_card_id("funka"))
             ]
         )
 
@@ -116,24 +117,13 @@ class TestPlaySelectStep:
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:play:%d#0" % R1,
-                "0:play:%d#0" % R2,
-                "0:play:%d#0" % G,
-                "0:play:%d#0" % B,
-                "0:play:%d,%d#0" % (R1, R2),
-                "0:play:%d,%d#0" % (R2, R1),
-                "0:play:%d,%d,%d#0" % (R1, G, B),
-                "0:play:%d,%d,%d#0" % (R1, B, G),
-                "0:play:%d,%d,%d#0" % (G, R1, B),
-                "0:play:%d,%d,%d#0" % (G, B, R1),
-                "0:play:%d,%d,%d#0" % (B, R1, G),
-                "0:play:%d,%d,%d#0" % (B, G, R1),
-                "0:play:%d,%d,%d#0" % (R2, G, B),
-                "0:play:%d,%d,%d#0" % (R2, B, G),
-                "0:play:%d,%d,%d#0" % (G, R2, B),
-                "0:play:%d,%d,%d#0" % (G, B, R2),
-                "0:play:%d,%d,%d#0" % (B, R2, G),
-                "0:play:%d,%d,%d#0" % (B, G, R2)
+                "0:playset:%d#0" % R1,
+                "0:playset:%d#0" % R2,
+                "0:playset:%d#0" % G,
+                "0:playset:%d#0" % B,
+                "0:playset:%d,%d#0" % (R1, R2),
+                "0:playset:%d,%d,%d#0" % (R1, G, B),
+                "0:playset:%d,%d,%d#0" % (G, B, R2)
             ]
         )
 
@@ -144,10 +134,10 @@ class TestPlaySelectStep:
             Card(get_card_id("funka"), 1),
             Card(get_card_id("hoshikuzu"), 2),
         ])
-        game.choice = "0:play:%d" % get_card_id("honow")
+        game.choice = "0:playset:%d" % get_card_id("honow")
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
-            PlayContinueStep,
+            PlayCardSelectStep,
             PlayStep
         ]
 
@@ -166,7 +156,7 @@ class TestPlaySelectStep:
             Card(get_card_id("hoshikuzu"), 2),
         ])
         game.players[0].orbit = 35
-        game.choice = "0:play:9"
+        game.choice = "0:playset:9"
         game.players[0].tmp_orbit = 35
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [OrbitAdvanceStep]
@@ -181,6 +171,81 @@ class TestPlaySelectStep:
         game.created = True
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [OrbitAdvanceStep]
+
+
+class TestPlayCardSelectStep:
+    def test_str(self):
+        step = PlayCardSelectStep(0)
+        assert str(step) == "0:playcardselect:0"
+
+    def get_game(self, field_list):
+        game = Game()
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([n for n in range(8, 17)])
+        game.turn = Turn(1, 0, 0, TurnType.NORMAL)
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=field_list)
+        return game
+
+    def test_process_1(self, get_step_classes, is_equal_candidates):
+        step = PlayCardSelectStep(0)
+        game = self.get_game([[
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
+        ]])
+        game.choice = ""
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlayCardSelectStep
+        ]
+        assert is_equal_candidates(
+            step.get_candidates(game),
+            [
+                "0:play:%d#0" % get_card_id("hoshikuzu"),
+                "0:play:%d#0" % get_card_id("funka"),
+                "0:play:%d#0" % get_card_id("honow")
+            ]
+        )
+
+    def test_process_2(self, get_step_classes, is_equal_candidates):
+        R1 = get_card_id("honow")
+        R2 = get_card_id("funka")
+        N = get_card_id("hoshikuzu")
+        step = PlayCardSelectStep(0)
+        step.played_ids_and_uniq_ids = [
+            [R1, 0], [R2, 1], [N, 2]
+        ]
+        game = self.get_game([[
+            Card(R1, 0),
+            Card(R2, 1),
+            Card(N, 2),
+        ]])
+        game.choice = ""
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlayContinueStep
+        ]
+
+    def test_process_3(self, get_step_classes, is_equal_candidates):
+        R1 = get_card_id("honow")
+        R2 = get_card_id("funka")
+        N = get_card_id("hoshikuzu")
+        step = PlayCardSelectStep(0)
+        step.played_ids_and_uniq_ids = [
+            [R1, 0], [R2, 1]
+        ]
+        game = self.get_game([[
+            Card(R1, 0),
+            Card(R2, 1),
+            Card(N, 2),
+        ]])
+        game.choice = ""
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlayCardSelectStep, PlayStep
+        ]
+        assert next_steps[1].card_ids == [N]
 
 
 class TestPlayContinueStep:
