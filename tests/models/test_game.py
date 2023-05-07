@@ -22,12 +22,12 @@ class TestGame:
         players = [Player(1), Player(0)]
         game.set_players(players=players)
         game.set_supply([n for n in range(6, 14)])
-        supply1 = game.supply[get_card_id("satellite")]
+        supply1 = game.supply[get_card_id("eisei")]
         assert supply1.count == 12
-        assert supply1.pile_card_id == get_card_id("satellite")
-        supply2 = game.supply[get_card_id("flame")]
+        assert supply1.pile_card_id == get_card_id("eisei")
+        supply2 = game.supply[get_card_id("honow")]
         assert supply2.count == 10
-        assert supply2.pile_card_id == get_card_id("flame")
+        assert supply2.pile_card_id == get_card_id("honow")
 
     def test_set_supply2(self):
         random.seed(0)
@@ -37,12 +37,12 @@ class TestGame:
         ]
         game.set_players(players=players)
         game.set_supply([n for n in range(6, 16)])
-        supply1 = game.supply[get_card_id("satellite")]
+        supply1 = game.supply[get_card_id("eisei")]
         assert supply1.count == 12
-        assert supply1.pile_card_id == get_card_id("satellite")
-        supply2 = game.supply[get_card_id("flame")]
+        assert supply1.pile_card_id == get_card_id("eisei")
+        supply2 = game.supply[get_card_id("honow")]
         assert supply2.count == 10
-        assert supply2.pile_card_id == get_card_id("flame")
+        assert supply2.pile_card_id == get_card_id("honow")
 
     def test_set_initial_step(self):
         game = Game()

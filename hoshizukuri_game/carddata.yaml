@@ -4,7 +4,8 @@
   expansion: Common
   id: 1
   japanese: 星屑
-  name: Stardust
+  name: Hoshikuzu
+  starflake: 1
   type: initial
   vp: 0
 - color: neutral
@@ -13,7 +14,8 @@
   expansion: Common
   id: 2
   japanese: 岩石
-  name: Rock
+  name: Ganseki
+  starflake: 2
   type: initial
   vp: 0
 - color: neutral
@@ -22,7 +24,8 @@
   expansion: Common
   id: 3
   japanese: 衛星
-  name: Satellite
+  name: Eisei
+  starflake: 1
   type: star-initial
   vp: 1
 - color: neutral
@@ -31,7 +34,8 @@
   expansion: Common
   id: 4
   japanese: 惑星
-  name: Planet
+  name: Wakusei
+  starflake: 1
   type: star
   vp: 4
 - color: neutral
@@ -40,52 +44,58 @@
   expansion: Common
   id: 5
   japanese: 恒星
-  name: Star
+  name: Kousei
+  starflake: 1
   type: star
   vp: 8
-- color: neutral
-  cost: 4
-  create: false
-  expansion: Base
-  id: 6
-  japanese: ブラックホール
-  name: Black Hole
-  type: celestial
-  vp: 0
-- color: neutral
-  cost: 8
-  create: true
-  expansion: Base
-  id: 7
-  japanese: 星座
-  name: Constellation
-  type: celestial
-  vp: 0
-- color: blue
-  cost: 5
-  create: false
-  expansion: Base
-  id: 8
-  japanese: 水晶
-  name: Crystal
-  type: celestial
-  vp: 0
 - color: red
   cost: 3
   create: false
   expansion: Base
-  id: 9
-  japanese: 噴火
-  name: Eruption
+  id: 6
+  japanese: 星雲
+  name: Seiun
+  starflake: 2
+  type: celestial
+  vp: 0
+- color: red
+  cost: 6
+  create: false
+  expansion: Base
+  id: 7
+  japanese: 原始星
+  name: Genshisei
+  starflake: 3
   type: celestial
   vp: 0
 - color: red
   cost: 4
   create: false
   expansion: Base
-  id: 10
+  id: 8
   japanese: 炎
-  name: Flame
+  name: Honow
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: red
+  cost: 5
+  create: false
+  expansion: Base
+  id: 9
+  japanese: 雷
+  name: Ikaduchi
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: green
+  cost: 6
+  create: false
+  expansion: Base
+  id: 10
+  japanese: 森林
+  name: Shinrin
+  starflake: 1
   type: celestial
   vp: 0
 - color: green
@@ -93,44 +103,49 @@
   create: false
   expansion: Base
   id: 11
-  japanese: 森林
-  name: Forest
-  type: celestial
-  vp: 0
-- color: green
-  cost: 8
-  create: false
-  expansion: Base
-  id: 12
-  japanese: 果物の木
-  name: Fruit Tree
-  type: celestial
-  vp: 3
-- color: blue
-  cost: 3
-  create: false
-  expansion: Base
-  id: 13
-  japanese: 間欠泉
-  name: Geyser
-  type: celestial
-  vp: 0
-- color: green
-  cost: 6
-  create: false
-  expansion: Base
-  id: 14
-  japanese: 草原
-  name: Grassland
+  japanese: 微生物
+  name: Bisebutsu
+  starflake: 1
   type: celestial
   vp: 0
 - color: green
   cost: 7
   create: false
   expansion: Base
-  id: 15
+  id: 12
   japanese: 大地
-  name: Ground
+  name: Daichi
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: green
+  cost: 6
+  create: false
+  expansion: Base
+  id: 13
+  japanese: 草原
+  name: Sougen
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: blue
+  cost: 2
+  create: false
+  expansion: Base
+  id: 14
+  japanese: 水
+  name: Mizu
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: blue
+  cost: 5
+  create: false
+  expansion: Base
+  id: 15
+  japanese: 氷
+  name: Kori
+  starflake: 1
   type: celestial
   vp: 0
 - color: blue
@@ -138,88 +153,98 @@
   create: false
   expansion: Base
   id: 16
-  japanese: 氷
-  name: Ice
+  japanese: 水晶
+  name: Suisho
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: neutral
+  cost: 4
+  create: false
+  expansion: Base
+  id: 17
+  japanese: ブラックホール
+  name: Blackhole
+  starflake: 1
   type: celestial
   vp: 0
 - color: neutral
   cost: 3
   create: false
   expansion: Base
-  id: 17
-  japanese: 隕石
-  name: Meteorite
-  type: celestial
-  vp: 0
-- color: green
-  cost: 6
-  create: false
-  expansion: Base
   id: 18
-  japanese: 微生物
-  name: Microorganism
+  japanese: 隕石
+  name: Inseki
+  starflake: 2
   type: celestial
   vp: 0
-- color: red
-  cost: 3
-  create: false
+- color: neutral
+  cost: 8
+  create: true
   expansion: Base
   id: 19
-  japanese: 星雲
-  name: Nebula
-  type: celestial
-  vp: 0
-- color: red
-  cost: 7
-  create: false
-  expansion: Base
-  id: 20
-  japanese: 核融合
-  name: Nuclear Fusion
-  type: celestial
-  vp: 0
-- color: red
-  cost: 6
-  create: false
-  expansion: Base
-  id: 21
-  japanese: 原始星
-  name: Protostar
-  type: celestial
-  vp: 0
-- color: blue
-  cost: 3
-  create: false
-  expansion: Base
-  id: 22
-  japanese: 泉
-  name: Spring
+  japanese: 星座
+  name: Seiza
+  starflake: 1
   type: celestial
   vp: 0
 - color: blue
   cost: 4
   create: false
   expansion: Base
-  id: 23
+  id: 20
   japanese: 嵐
-  name: Storm
-  type: celestial
-  vp: 0
-- color: red
-  cost: 5
-  create: false
-  expansion: Base
-  id: 24
-  japanese: 雷
-  name: Thunder
+  name: Arashi
+  starflake: 1
   type: celestial
   vp: 0
 - color: blue
-  cost: 2
+  cost: 3
+  create: false
+  expansion: Base
+  id: 21
+  japanese: 間欠泉
+  name: Kanketsusen
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: red
+  cost: 3
+  create: false
+  expansion: Base
+  id: 22
+  japanese: 噴火
+  name: Funka
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: blue
+  cost: 3
+  create: false
+  expansion: Base
+  id: 23
+  japanese: 泉
+  name: Izumi
+  starflake: 1
+  type: celestial
+  vp: 0
+- color: green
+  cost: 8
+  create: false
+  expansion: Base
+  id: 24
+  japanese: 果物の木
+  name: Kudamononoki
+  starflake: 1
+  type: celestial
+  vp: 3
+- color: red
+  cost: 7
   create: false
   expansion: Base
   id: 25
-  japanese: 水
-  name: Water
+  japanese: 核融合
+  name: Kakuyugo
+  starflake: 0
   type: celestial
   vp: 0

@@ -67,37 +67,37 @@ class TestCardCondition:
     def test_card_condition_4(self):
         game = Game()
         cond = CardCondition(type=CardType.CELESTIAL)
-        card = Card(get_card_id("eruption"), 100)
+        card = Card(get_card_id("funka"), 100)
         assert is_match_card(card, cond, game=game) is True
 
     def test_card_condition_5(self):
         game = Game()
         cond = CardCondition(type=CardType.CELESTIAL)
-        card = Card(get_card_id("star"), 100)
+        card = Card(get_card_id("kousei"), 100)
         assert is_match_card(card, cond, game=game) is False
 
     def test_card_condition_6(self):
         game = Game()
         cond = CardCondition(le_cost=Cost(3))
-        card = Card(get_card_id("eruption"), 100)
+        card = Card(get_card_id("funka"), 100)
         assert is_match_card(card, cond, game=game) is True
 
     def test_card_condition_7(self):
         game = Game()
         cond = CardCondition(le_cost=Cost(2))
-        card = Card(get_card_id("eruption"), 100)
+        card = Card(get_card_id("funka"), 100)
         assert is_match_card(card, cond, game=game) is False
 
     def test_card_condition_8(self):
         game = Game()
         cond = CardCondition(eq_cost=Cost(3))
-        card = Card(get_card_id("eruption"), 100)
+        card = Card(get_card_id("funka"), 100)
         assert is_match_card(card, cond, game=game) is True
 
     def test_card_condition_9(self):
         game = Game()
         cond = CardCondition(eq_cost=Cost(3))
-        card = Card(get_card_id("forest"), 100)
+        card = Card(get_card_id("shinrin"), 100)
         assert is_match_card(card, cond, game=game) is False
 
     def test_card_condition_10(self):
@@ -105,9 +105,9 @@ class TestCardCondition:
         cond = CardConditionOr([
             CardCondition(eq_cost=Cost(2)),
             CardCondition(eq_cost=Cost(3))])
-        card1 = Card(get_card_id("forest"), 100)
-        card2 = Card(get_card_id("eruption"), 100)
-        card3 = Card(get_card_id("water"), 100)
+        card1 = Card(get_card_id("shinrin"), 100)
+        card2 = Card(get_card_id("funka"), 100)
+        card3 = Card(get_card_id("mizu"), 100)
         assert is_match_card(card1, cond, game) is False
         assert is_match_card(card2, cond, game) is True
         assert is_match_card(card3, cond, game) is True
@@ -122,9 +122,9 @@ class TestCardCondition:
         game = Game()
         cond = CardCondition(create=True)
         assert is_match_card(Card(
-            get_card_id("planet"), 10), cond, game) is True
+            get_card_id("wakusei"), 10), cond, game) is True
         assert is_match_card(Card(
-            get_card_id("stardust"), 5), cond, game) is False
+            get_card_id("hoshikuzu"), 5), cond, game) is False
 
     def test_get_match_card_ids1(self):
         game = Game()
@@ -184,27 +184,27 @@ class TestCardCondition:
         cond = CardCondition(type=CardType.CELESTIAL)
         piles = [
             Pile(PileType.NUMBER, card_id_and_count=[
-                get_card_id("stardust"), 7]),
+                get_card_id("hoshikuzu"), 7]),
             Pile(PileType.NUMBER, card_id_and_count=[
-                get_card_id("star"), 10]),
+                get_card_id("kousei"), 10]),
             Pile(PileType.NUMBER, card_id_and_count=[
-                get_card_id("forest"), 10])
+                get_card_id("shinrin"), 10])
         ]
 
         result = get_match_card_ids(piles, cond, game, uniq_flag=True)
-        assert result == [11]
+        assert result == [10]
 
     def test_get_match_card_ids5(self):
         game = Game()
         cond = CardCondition(type=CardType.CELESTIAL)
         piles = {
-            get_card_id("stardust"): Pile(PileType.NUMBER, card_id_and_count=[
-                get_card_id("stardust"), 7]),
-            get_card_id("star"): Pile(PileType.NUMBER, card_id_and_count=[
-                get_card_id("star"), 10]),
-            get_card_id("forest"): Pile(PileType.NUMBER, card_id_and_count=[
-                get_card_id("forest"), 10])
+            get_card_id("hoshikuzu"): Pile(PileType.NUMBER, card_id_and_count=[
+                get_card_id("hoshikuzu"), 7]),
+            get_card_id("kousei"): Pile(PileType.NUMBER, card_id_and_count=[
+                get_card_id("kousei"), 10]),
+            get_card_id("shinrin"): Pile(PileType.NUMBER, card_id_and_count=[
+                get_card_id("shinrin"), 10])
         }
 
         result = get_match_card_ids(piles, cond, game, uniq_flag=True)
-        assert result == [11]
+        assert result == [10]

@@ -76,9 +76,9 @@ class TestPlaySelectStep:
     def test_process_normal(self, get_step_classes, is_equal_candidates):
         step = PlaySelectStep(0)
         game = self.get_game([
-            Card(get_card_id("flame"), 0),
-            Card(get_card_id("eruption"), 1),
-            Card(get_card_id("stardust"), 2),
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
         ])
         game.choice = ""
         next_steps = step.process(game)
@@ -88,59 +88,63 @@ class TestPlaySelectStep:
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:play:1#0",
-                "0:play:9#0",
-                "0:play:10#0",
-                "0:play:9,10#0",
-                "0:play:10,9#0",
+                "0:play:%d#0" % get_card_id("hoshikuzu"),
+                "0:play:%d#0" % get_card_id("funka"),
+                "0:play:%d#0" % get_card_id("honow"),
+                "0:play:%d,%d#0" % (get_card_id("funka"), get_card_id("honow")),
+                "0:play:%d,%d#0" % (get_card_id("honow"), get_card_id("funka"))
             ]
         )
 
     def test_process_3_colors(self, get_step_classes, is_equal_candidates):
         step = PlaySelectStep(0)
         game = self.get_game([
-            Card(get_card_id("flame"), 0),
-            Card(get_card_id("eruption"), 1),
-            Card(get_card_id("forest"), 2),
-            Card(get_card_id("ice"), 3),
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("shinrin"), 2),
+            Card(get_card_id("kori"), 3),
         ])
         game.choice = ""
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
             PlaySelectStep
         ]
+        R1 = get_card_id("honow")
+        R2 = get_card_id("funka")
+        B = get_card_id("kori")
+        G = get_card_id("shinrin")
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:play:9#0",
-                "0:play:10#0",
-                "0:play:11#0",
-                "0:play:16#0",
-                "0:play:9,10#0",
-                "0:play:10,9#0",
-                "0:play:9,11,16#0",
-                "0:play:9,16,11#0",
-                "0:play:11,9,16#0",
-                "0:play:11,16,9#0",
-                "0:play:16,9,11#0",
-                "0:play:16,11,9#0",
-                "0:play:10,11,16#0",
-                "0:play:10,16,11#0",
-                "0:play:11,10,16#0",
-                "0:play:11,16,10#0",
-                "0:play:16,10,11#0",
-                "0:play:16,11,10#0",
+                "0:play:%d#0" % R1,
+                "0:play:%d#0" % R2,
+                "0:play:%d#0" % G,
+                "0:play:%d#0" % B,
+                "0:play:%d,%d#0" % (R1, R2),
+                "0:play:%d,%d#0" % (R2, R1),
+                "0:play:%d,%d,%d#0" % (R1, G, B),
+                "0:play:%d,%d,%d#0" % (R1, B, G),
+                "0:play:%d,%d,%d#0" % (G, R1, B),
+                "0:play:%d,%d,%d#0" % (G, B, R1),
+                "0:play:%d,%d,%d#0" % (B, R1, G),
+                "0:play:%d,%d,%d#0" % (B, G, R1),
+                "0:play:%d,%d,%d#0" % (R2, G, B),
+                "0:play:%d,%d,%d#0" % (R2, B, G),
+                "0:play:%d,%d,%d#0" % (G, R2, B),
+                "0:play:%d,%d,%d#0" % (G, B, R2),
+                "0:play:%d,%d,%d#0" % (B, R2, G),
+                "0:play:%d,%d,%d#0" % (B, G, R2)
             ]
         )
 
     def test_process_play(self, get_step_classes):
         step = PlaySelectStep(0)
         game = self.get_game([
-            Card(get_card_id("flame"), 0),
-            Card(get_card_id("eruption"), 1),
-            Card(get_card_id("stardust"), 2),
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
         ])
-        game.choice = "0:play:9"
+        game.choice = "0:play:%d" % get_card_id("honow")
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
             PlayContinueStep,
@@ -157,9 +161,9 @@ class TestPlaySelectStep:
     def test_process_over_orbit(self, get_step_classes):
         step = PlaySelectStep(0)
         game = self.get_game([
-            Card(get_card_id("flame"), 0),
-            Card(get_card_id("eruption"), 1),
-            Card(get_card_id("stardust"), 2),
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
         ])
         game.players[0].orbit = 35
         game.choice = "0:play:9"
@@ -170,9 +174,9 @@ class TestPlaySelectStep:
     def test_process_created(self, get_step_classes):
         step = PlaySelectStep(0)
         game = self.get_game([
-            Card(get_card_id("flame"), 0),
-            Card(get_card_id("eruption"), 1),
-            Card(get_card_id("stardust"), 2),
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
         ])
         game.created = True
         next_steps = step.process(game)

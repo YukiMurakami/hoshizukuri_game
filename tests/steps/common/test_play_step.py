@@ -6,7 +6,7 @@ from hoshizukuri_game.steps.common.play_step import (
     PlayStep
 )
 from hoshizukuri_game.steps.common_card_steps import (
-    SatelliteStep, StardustStep
+    EiseiStep, HoshikuzuStep
 )
 
 
@@ -25,7 +25,7 @@ class TestPlayStep:
             PileType.LIST, card_list=[Card(1, 1)]
         )
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == [StardustStep]
+        assert get_step_classes(next_steps) == [HoshikuzuStep]
 
     def test_process_2(self, get_step_classes):
         step = PlayStep(
@@ -63,5 +63,5 @@ class TestPlayStep:
             PileType.LIST, card_list=[Card(3, 1)]
         )
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == [SatelliteStep]
+        assert get_step_classes(next_steps) == [EiseiStep]
         assert game.created is True

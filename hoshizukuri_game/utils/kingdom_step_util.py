@@ -3,7 +3,7 @@ Get kingdom step with card_id.
 """
 from .card_util import get_card_id
 from ..steps.common_card_steps import (
-    StardustStep, RockStep, SatelliteStep, PlanetStep, StarStep
+    HoshikuzuStep, GansekiStep, EiseiStep, WakuseiStep, KouseiStep
 )
 from ..steps.abstract_step import AbstractStep
 
@@ -27,8 +27,8 @@ def get_kingdom_steps(
     if org_id == 0:
         org_id = card_id
     step_dic = {
-        "planet": PlanetStep, "star": StarStep,
-        "stardust": StardustStep, "rock": RockStep, "satellite": SatelliteStep,
+        "wakusei": WakuseiStep, "kousei": KouseiStep,
+        "hoshikuzu": HoshikuzuStep, "ganseki": GansekiStep, "eisei": EiseiStep,
     }
     step_id_dic = {}
     for k, v in step_dic.items():

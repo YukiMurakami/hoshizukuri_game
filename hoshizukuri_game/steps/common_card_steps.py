@@ -11,9 +11,9 @@ from .common.starflake_step import (
 )
 
 
-class StardustStep(AbstractStep):
+class HoshikuzuStep(AbstractStep):
     """
-    Stardust card step.
+    Hoshikuzu card step.
 
     Args:
         player_id (int): player ID.
@@ -27,15 +27,15 @@ class StardustStep(AbstractStep):
         self.uniq_id = uniq_id
 
     def __str__(self):
-        return "%d:stardust:%d" % (self.depth, self.player_id)
+        return "%d:hoshikuzu:%d" % (self.depth, self.player_id)
 
     def process(self, game: Game):
         return [AddStarflakeStep(self.player_id, self.depth, 1)]
 
 
-class RockStep(AbstractStep):
+class GansekiStep(AbstractStep):
     """
-    Rock card step.
+    Ganseki card step.
 
     Args:
         player_id (int): player ID.
@@ -49,15 +49,15 @@ class RockStep(AbstractStep):
         self.uniq_id = uniq_id
 
     def __str__(self):
-        return "%d:rock:%d" % (self.depth, self.player_id)
+        return "%d:ganseki:%d" % (self.depth, self.player_id)
 
     def process(self, game: Game):
         return [AddStarflakeStep(self.player_id, self.depth, 2)]
 
 
-class SatelliteStep(AbstractStep):
+class EiseiStep(AbstractStep):
     """
-    Satellite card step.
+    Eisei card step.
 
     Args:
         player_id (int): player ID.
@@ -71,7 +71,7 @@ class SatelliteStep(AbstractStep):
         self.uniq_id = uniq_id
 
     def __str__(self):
-        return "%d:satellite:%d" % (self.depth, self.player_id)
+        return "%d:eisei:%d" % (self.depth, self.player_id)
 
     def process(self, game: Game):
         return [AddStarflakeStep(self.player_id, self.depth, 1)]
@@ -80,9 +80,9 @@ class SatelliteStep(AbstractStep):
         return 1
 
 
-class PlanetStep(AbstractStep):
+class WakuseiStep(AbstractStep):
     """
-    Planet card step.
+    Wakusei card step.
 
     Args:
         player_id (int): player ID.
@@ -96,7 +96,7 @@ class PlanetStep(AbstractStep):
         self.uniq_id = uniq_id
 
     def __str__(self):
-        return "%d:planet:%d" % (self.depth, self.player_id)
+        return "%d:wakusei:%d" % (self.depth, self.player_id)
 
     def process(self, game: Game):
         return [AddStarflakeStep(self.player_id, self.depth, 1)]
@@ -105,7 +105,7 @@ class PlanetStep(AbstractStep):
         return 4
 
 
-class StarStep(AbstractStep):
+class KouseiStep(AbstractStep):
     """
     Star card step.
 

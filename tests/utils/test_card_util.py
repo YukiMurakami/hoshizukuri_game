@@ -22,11 +22,11 @@ import pytest
 
 class TestCardUtil:
     def test_get_card_id_1(self):
-        result = get_card_id("stardust")
+        result = get_card_id("hoshikuzu")
         assert result == 1
 
     def test_get_card_id_2(self):
-        result = get_card_id("Rock")
+        result = get_card_id("Ganseki")
         assert result == 2
 
     def test_get_card_id_3(self):
@@ -38,17 +38,17 @@ class TestCardUtil:
         assert result == "Base"
 
     def test_get_vp(self):
-        assert get_vp(12) == 3
+        assert get_vp(24) == 3
         assert get_vp(5) == 8
 
     def test_get_types(self):
         game = Game()
-        result = get_types(get_card_id("satellite"), game)
+        result = get_types(get_card_id("eisei"), game)
         assert result == [CardType.STAR, CardType.INITIAL]
 
     def test_get_colors(self):
         game = Game()
-        result = get_colors(get_card_id("flame"), game)
+        result = get_colors(get_card_id("honow"), game)
         assert result == [CardColor.RED]
 
     def test_id2uniqid_1(self):
@@ -93,7 +93,7 @@ class TestCardUtil:
 
     def test_get_cost_1(self):
         game = Game()
-        cost = get_cost(get_card_id("star"), game)
+        cost = get_cost(get_card_id("kousei"), game)
         assert cost == Cost(10)
 
     def test_ids2cards(self):
@@ -162,7 +162,7 @@ class TestCardUtil:
         assert is_same_card_ids([1, 2], [2, 2]) is False
 
     def test_get_original_name(self):
-        assert get_original_name(1) == "Stardust"
+        assert get_original_name(1) == "Hoshikuzu"
 
     def test_is_create_1(self):
         assert is_create(1) is False

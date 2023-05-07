@@ -48,8 +48,8 @@ class Game:
         self.stack: List[AbstractStep] = []
         self.choice: str = ""
         self.start_deck: List[int] = [get_card_id(
-            "stardust")] * 3 + [get_card_id("rock")] * 1 + [get_card_id(
-                "satellite")] * 3
+            "hoshikuzu")] * 3 + [get_card_id("ganseki")] * 1 + [get_card_id(
+                "eisei")] * 3
         self._uniq_id = 0
         self.result: List[dict] = []
         self.winner_id: int = -1
@@ -93,9 +93,9 @@ class Game:
             cands = sorted(cands[:8])
 
         common_supplys = [
-            get_card_id("satellite"),
-            get_card_id("planet"),
-            get_card_id("star")
+            get_card_id("eisei"),
+            get_card_id("wakusei"),
+            get_card_id("kousei")
         ]
 
         for card_id in common_supplys + cands:
@@ -120,9 +120,9 @@ class Game:
 
     def _get_start_supply_count(self, card_id: int, player_num: int):
         dic = {
-            "satellite": 12,
-            "planet": 12,
-            "star": 12
+            "eisei": 12,
+            "wakusei": 12,
+            "kousei": 12
         }
         for k in dic:
             if get_card_id(k) == card_id:

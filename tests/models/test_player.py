@@ -2,6 +2,7 @@ from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.player import Player
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
 from hoshizukuri_game.models.card import Card
+from hoshizukuri_game.utils.card_util import get_card_id
 
 
 class TestPlayer:
@@ -44,16 +45,16 @@ class TestPlayer:
         player.pile[PileName.FIELD] = Pile(
             PileType.LISTLIST, card_list=[
                 [
-                    Card(card_id=8, uniq_id=6),
-                    Card(card_id=9, uniq_id=7),
-                    Card(card_id=11, uniq_id=8)
+                    Card(card_id=get_card_id("honow"), uniq_id=6),
+                    Card(card_id=get_card_id("mizu"), uniq_id=7),
+                    Card(card_id=get_card_id("daichi"), uniq_id=8)
                 ],
                 [
-                    Card(card_id=1, uniq_id=9)
+                    Card(card_id=get_card_id("hoshikuzu"), uniq_id=9)
                 ],
                 [
-                    Card(card_id=9, uniq_id=10),
-                    Card(card_id=10, uniq_id=11)
+                    Card(card_id=get_card_id("mizu"), uniq_id=10),
+                    Card(card_id=get_card_id("shinrin"), uniq_id=11)
                 ],
                 [],
                 []

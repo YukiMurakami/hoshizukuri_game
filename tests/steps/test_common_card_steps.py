@@ -1,9 +1,9 @@
 from hoshizukuri_game.steps.common_card_steps import (
-    StardustStep,
-    RockStep,
-    SatelliteStep,
-    PlanetStep,
-    StarStep
+    HoshikuzuStep,
+    GansekiStep,
+    EiseiStep,
+    WakuseiStep,
+    KouseiStep
 )
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.player import Player
@@ -12,13 +12,13 @@ from hoshizukuri_game.steps.common.starflake_step import (
 )
 
 
-class TestStardustStep():
+class TestHoshikuzuStep():
     def test_str(self):
-        step = StardustStep(0, 1, 0)
-        assert str(step) == "1:stardust:0"
+        step = HoshikuzuStep(0, 1, 0)
+        assert str(step) == "1:hoshikuzu:0"
 
     def test_process(self):
-        step = StardustStep(0, 1, 0)
+        step = HoshikuzuStep(0, 1, 0)
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
@@ -27,13 +27,13 @@ class TestStardustStep():
         assert next_steps[0].add_starflake == 1
 
 
-class TestRockStep():
+class TestGansekiStep():
     def test_str(self):
-        step = RockStep(0, 1, 0)
-        assert str(step) == "1:rock:0"
+        step = GansekiStep(0, 1, 0)
+        assert str(step) == "1:ganseki:0"
 
     def test_process(self):
-        step = RockStep(0, 1, 0)
+        step = GansekiStep(0, 1, 0)
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
@@ -42,13 +42,13 @@ class TestRockStep():
         assert next_steps[0].add_starflake == 2
 
 
-class TestSatelliteStep():
+class TestEiseiStep():
     def test_str(self):
-        step = SatelliteStep(0, 1, 0)
-        assert str(step) == "1:satellite:0"
+        step = EiseiStep(0, 1, 0)
+        assert str(step) == "1:eisei:0"
 
     def test_process(self):
-        step = SatelliteStep(0, 1, 0)
+        step = EiseiStep(0, 1, 0)
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
@@ -58,13 +58,13 @@ class TestSatelliteStep():
         assert step.get_victory(game) == 1
 
 
-class TestPlanetStep():
+class TestWakuseiStep():
     def test_str(self):
-        step = PlanetStep(0, 1, 0)
-        assert str(step) == "1:planet:0"
+        step = WakuseiStep(0, 1, 0)
+        assert str(step) == "1:wakusei:0"
 
     def test_process(self):
-        step = PlanetStep(0, 1, 0)
+        step = WakuseiStep(0, 1, 0)
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
@@ -74,13 +74,13 @@ class TestPlanetStep():
         assert step.get_victory(game) == 4
 
 
-class TestStarStep():
+class TestKouseiStep():
     def test_str(self):
-        step = StarStep(0, 1, 0)
+        step = KouseiStep(0, 1, 0)
         assert str(step) == "1:star:0"
 
     def test_process(self):
-        step = StarStep(0, 1, 0)
+        step = KouseiStep(0, 1, 0)
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
