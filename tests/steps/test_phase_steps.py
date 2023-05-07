@@ -263,6 +263,11 @@ class TestPlayContinueStep:
                 Card(1, 1), Card(1, 2)
             ]
         )
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 3)]
+            ]
+        )
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
             PlaySelectStep, DrawStep
@@ -279,9 +284,55 @@ class TestPlayContinueStep:
                 Card(1, 1), Card(1, 2), Card(1, 3), Card(2, 4)
             ]
         )
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 5)]
+            ]
+        )
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
             PlaySelectStep
+        ]
+
+    def test_process_3(self, get_step_classes):
+        step = PlayContinueStep(0)
+        game = Game()
+        game.set_players([Player(0)])
+        game.set_supply([])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(1, 3), Card(2, 4)
+            ]
+        )
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(3, 5)]
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            OrbitAdvanceStep
+        ]
+
+    def test_process_4(self, get_step_classes):
+        step = PlayContinueStep(0)
+        game = Game()
+        game.set_players([Player(0)])
+        game.set_supply([])
+        game.players[0].orbit = 34
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(1, 3), Card(2, 4)
+            ]
+        )
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(3, 5)]
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            OrbitAdvanceStep
         ]
 
 

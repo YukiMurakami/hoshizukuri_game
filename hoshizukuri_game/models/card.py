@@ -2,7 +2,7 @@
 This module defines the Card model.
 """
 from __future__ import annotations
-from ..utils.card_util import get_starflake
+from ..utils.card_util import get_starflake, is_create
 
 
 class Card:
@@ -20,6 +20,7 @@ class Card:
         self.id = card_id
         self.uniq_id = uniq_id
         self.starflake = get_starflake(card_id)
+        self.create = is_create(card_id)
 
     def __str__(self):
         return "%d-%d" % (self.id, self.uniq_id)

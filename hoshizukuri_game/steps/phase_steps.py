@@ -21,7 +21,7 @@ from ..models.card_condition import (
     get_match_card_ids
 )
 from ..utils.card_util import (
-    get_colors, get_cost, id2uniq_id, ids2uniq_ids, CardColor
+    get_colors, get_cost, ids2uniq_ids, CardColor
 )
 from ..utils.other_util import (
     make_combination
@@ -205,11 +205,12 @@ class PlayCardSelectStep(AbstractStep):
         assert command in ["play"]
         assert player_id == self.player_id
         if uniq_id == -1:
-            uniq_id = id2uniq_id(
-                game.players[self.player_id].pile[
-                    PileName.FIELD],
-                play_id, game
-            )
+            for card in game.players[self.player_id].pile[
+                    PileName.FIELD].card_list[-1]:
+                if (card.id == play_id and
+                        [play_id,
+                            card.uniq_id] not in self.played_ids_and_uniq_ids):
+                    uniq_id = card.uniq_id
         self.played_ids_and_uniq_ids.append([play_id, uniq_id])
         return [
             self,
@@ -244,6 +245,17 @@ class PlayContinueStep(AbstractStep):
         return "%d:playcontinue:%d" % (self.depth, self.player_id)
 
     def process(self, game: Game):
+        # check created
+        for card in game.players[self.player_id].pile[
+                PileName.FIELD].card_list[-1]:
+            if card.create:
+                game.created = True
+                break
+        game.players[self.player_id].update_tmp_orbit(game)
+        if game.players[self.player_id].tmp_orbit >= 35:
+            return [OrbitAdvanceStep(self.player_id)]
+        if game.created:
+            return [OrbitAdvanceStep(self.player_id)]
         # draw up to 4.
         hand_count = game.players[self.player_id].pile[PileName.HAND].count
         if hand_count < 4:
