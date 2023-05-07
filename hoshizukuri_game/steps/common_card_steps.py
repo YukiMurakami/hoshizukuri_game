@@ -6,9 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..models.game import Game
 from .abstract_step import AbstractStep
-from .common.starflake_step import (
-    AddStarflakeStep
-)
+from ..utils.card_util import get_vp, get_card_id
 
 
 class HoshikuzuStep(AbstractStep):
@@ -29,9 +27,6 @@ class HoshikuzuStep(AbstractStep):
     def __str__(self):
         return "%d:hoshikuzu:%d" % (self.depth, self.player_id)
 
-    def process(self, game: Game):
-        return [AddStarflakeStep(self.player_id, self.depth, 1)]
-
 
 class GansekiStep(AbstractStep):
     """
@@ -50,9 +45,6 @@ class GansekiStep(AbstractStep):
 
     def __str__(self):
         return "%d:ganseki:%d" % (self.depth, self.player_id)
-
-    def process(self, game: Game):
-        return [AddStarflakeStep(self.player_id, self.depth, 2)]
 
 
 class EiseiStep(AbstractStep):
@@ -73,11 +65,8 @@ class EiseiStep(AbstractStep):
     def __str__(self):
         return "%d:eisei:%d" % (self.depth, self.player_id)
 
-    def process(self, game: Game):
-        return [AddStarflakeStep(self.player_id, self.depth, 1)]
-
     def get_victory(self, game: Game):
-        return 1
+        return get_vp(get_card_id("eisei"))
 
 
 class WakuseiStep(AbstractStep):
@@ -98,11 +87,8 @@ class WakuseiStep(AbstractStep):
     def __str__(self):
         return "%d:wakusei:%d" % (self.depth, self.player_id)
 
-    def process(self, game: Game):
-        return [AddStarflakeStep(self.player_id, self.depth, 1)]
-
     def get_victory(self, game: Game):
-        return 4
+        return get_vp(get_card_id("wakusei"))
 
 
 class KouseiStep(AbstractStep):
@@ -123,8 +109,5 @@ class KouseiStep(AbstractStep):
     def __str__(self):
         return "%d:star:%d" % (self.depth, self.player_id)
 
-    def process(self, game: Game):
-        return [AddStarflakeStep(self.player_id, self.depth, 1)]
-
     def get_victory(self, game: Game):
-        return 8
+        return get_vp(get_card_id("kousei"))

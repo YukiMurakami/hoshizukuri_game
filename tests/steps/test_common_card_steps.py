@@ -7,9 +7,6 @@ from hoshizukuri_game.steps.common_card_steps import (
 )
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.player import Player
-from hoshizukuri_game.steps.common.starflake_step import (
-    AddStarflakeStep
-)
 
 
 class TestHoshikuzuStep():
@@ -22,9 +19,7 @@ class TestHoshikuzuStep():
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
-        assert len(next_steps) == 1
-        assert isinstance(next_steps[0], AddStarflakeStep)
-        assert next_steps[0].add_starflake == 1
+        assert len(next_steps) == 0
 
 
 class TestGansekiStep():
@@ -37,9 +32,7 @@ class TestGansekiStep():
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
-        assert len(next_steps) == 1
-        assert isinstance(next_steps[0], AddStarflakeStep)
-        assert next_steps[0].add_starflake == 2
+        assert len(next_steps) == 0
 
 
 class TestEiseiStep():
@@ -52,9 +45,7 @@ class TestEiseiStep():
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
-        assert len(next_steps) == 1
-        assert isinstance(next_steps[0], AddStarflakeStep)
-        assert next_steps[0].add_starflake == 1
+        assert len(next_steps) == 0
         assert step.get_victory(game) == 1
 
 
@@ -68,9 +59,7 @@ class TestWakuseiStep():
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
-        assert len(next_steps) == 1
-        assert isinstance(next_steps[0], AddStarflakeStep)
-        assert next_steps[0].add_starflake == 1
+        assert len(next_steps) == 0
         assert step.get_victory(game) == 4
 
 
@@ -84,7 +73,5 @@ class TestKouseiStep():
         game = Game()
         game.set_players([Player(0)])
         next_steps = step.process(game)
-        assert len(next_steps) == 1
-        assert isinstance(next_steps[0], AddStarflakeStep)
-        assert next_steps[0].add_starflake == 1
+        assert len(next_steps) == 0
         assert step.get_victory(game) == 8

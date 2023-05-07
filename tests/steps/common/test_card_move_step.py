@@ -311,7 +311,7 @@ class TestSelectProcess():
         self.check(
             get_step_classes, 0, [Card(1, 1), Card(4, 2)],
             choice="0:play:0",
-            expected_next_steps=[])
+            expected_next_steps=[], can_less=True)
 
     def test_select_process_4(self, get_step_classes):
         self.check(

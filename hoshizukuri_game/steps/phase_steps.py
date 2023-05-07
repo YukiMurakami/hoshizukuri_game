@@ -301,6 +301,7 @@ class GenerateSelectStep(AbstractStep):
 
     def process(self, game: Game):
         game.phase = Phase.GENERATE
+        game.update_starflake()
         assert game.turn.player_id == self.player_id
         candidates = self._create_candidates(game)
         if game.choice == "" or game.choice not in candidates:

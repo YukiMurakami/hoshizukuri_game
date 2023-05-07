@@ -93,4 +93,5 @@ class PlayEndStep(AbstractStep):
             self.depth, self.player_id, self.card_id, self.uniq_id)
 
     def process(self, game: Game):
+        game.update_starflake()
         return []

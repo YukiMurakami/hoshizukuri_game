@@ -322,8 +322,13 @@ class TestGenerateSelectStep:
         game.phase = Phase.ORBIT
         game.set_players([Player(0), Player(1)])
         game.set_supply([])
-        game.starflake = 8
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1), Card(2, 2), Card(2, 3), Card(7, 4)]
+            ]
+        )
         next_steps = step.process(game)
+        assert game.starflake == 8
         assert get_step_classes(next_steps) == [GenerateSelectStep]
         assert game.phase == Phase.GENERATE
         assert is_equal_candidates(
@@ -341,7 +346,11 @@ class TestGenerateSelectStep:
         game.phase = Phase.ORBIT
         game.set_players([Player(0), Player(1)])
         game.set_supply([])
-        game.starflake = 8
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1), Card(2, 2), Card(2, 3), Card(7, 4)]
+            ]
+        )
         game.choice = "0:generate:4"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
@@ -356,7 +365,11 @@ class TestGenerateSelectStep:
         game.phase = Phase.ORBIT
         game.set_players([Player(0), Player(1)])
         game.set_supply([])
-        game.starflake = 8
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1), Card(2, 2), Card(2, 3), Card(7, 4)]
+            ]
+        )
         game.choice = "0:generate:0"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [CleanupStep]

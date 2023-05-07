@@ -17,8 +17,8 @@ class TestHoshizukuriGame:
         assert is_equal_candidates(
             candidates,
             [
-                '0:play:1#0',
-                '0:play:3#0'
+                '0:playset:1#0',
+                '0:playset:3#0'
             ]
         )
 
