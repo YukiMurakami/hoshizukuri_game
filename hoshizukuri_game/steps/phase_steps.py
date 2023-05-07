@@ -14,7 +14,7 @@ from .common.starflake_step import AddStarflakeStep
 from .common.gain_step import GainStep
 from .common.discard_step import DiscardStep
 from ..models.turn import Phase
-from ..models.pile import PileName
+from ..models.pile import PileName, PileType
 from ..models.card import CardColor
 from ..models.cost import Cost
 from ..models.card_condition import (
@@ -31,6 +31,7 @@ from ..utils.choice_util import (
     cparsei,
     cparsell
 )
+from ..utils.kingdom_step_util import get_kingdom_steps
 from itertools import product
 
 
@@ -342,6 +343,63 @@ class UpdateTurnStep(AbstractStep):
             if min_orbit > orbit:
                 min_orbit = orbit
                 next_player_id = player_id
+        if min_orbit >= 35:
+            # finish
+            return [GameFinishStep()]
         turn = Turn(
             next_turn, next_uniq_turn, next_player_id, TurnType.NORMAL)
         return [TurnStartStep(next_player_id, turn)]
+
+
+class GameFinishStep(AbstractStep):
+    """
+    game finish step.
+    """
+    def __init__(self):
+        super().__init__()
+        self.depth = 0
+
+    def __str__(self):
+        return "%d:gamefinish:" % (self.depth)
+
+    def process(self, game: Game):
+        game.phase = Phase.FINISH
+        # calc points
+        scores = []
+        cards = []
+        for player_id in range(len(game.players)):
+            sum_point = 0
+            cards.append([])
+            for name, pile in game.players[player_id].pile.items():
+                if pile.type == PileType.LIST:
+                    for card in pile.card_list:
+                        cards[-1].append(card.id)
+                        step = get_kingdom_steps(0, 0, card.id, card.uniq_id)
+                        point = step.get_victory(game)
+                        sum_point += point
+                elif pile.type == PileType.LISTLIST:
+                    for cardlist in pile.card_list:
+                        for card in cardlist:
+                            cards[-1].append(card.id)
+                            step = get_kingdom_steps(
+                                0, 0, card.id, card.uniq_id)
+                            point = step.get_victory(game)
+                            sum_point += point
+            scores.append(
+                [player_id, sum_point, game.players[player_id].orbit])
+        scores = sorted(scores, key=lambda x: (x[1], -x[2]), reverse=True)
+        sort_player_ids = [n[0] for n in scores]
+
+        game.result = []
+        for player_id in range(len(game.players)):
+            index = sort_player_ids.index(player_id)
+            game.result.append(
+                {
+                    "point": scores[index][1],
+                    "rank": index + 1,
+                    "player_id": player_id,
+                    "cards": sorted(cards[player_id])
+                 }
+            )
+        game.winner_id = scores[0][0]
+        return []

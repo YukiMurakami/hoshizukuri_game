@@ -6,6 +6,7 @@ from hoshizukuri_game.steps.common.gain_step import GainStep
 from hoshizukuri_game.steps.common.play_step import PlayStep
 from hoshizukuri_game.steps.common.starflake_step import AddStarflakeStep
 from hoshizukuri_game.steps.phase_steps import (
+    GameFinishStep,
     OrbitAdvanceStep,
     PlayContinueStep,
     TurnStartStep,
@@ -360,3 +361,58 @@ class TestUpdateTurnStep:
         assert game.phase == Phase.TURN_END
         assert next_steps[0].turn.turn == 2
         assert next_steps[0].turn.uniq_turn == 2
+
+    def test_process_3(self, get_step_classes, is_equal_candidates):
+        step = UpdateTurnStep(0)
+        game = Game()
+        game.phase = Phase.CLEAN_UP
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.turn = Turn(1, 1, 0, TurnType.NORMAL)
+        game.players[0].orbit = 35
+        game.players[1].orbit = 35
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            GameFinishStep
+        ]
+
+
+class TestGameFinishStep:
+    def test_str(self):
+        step = GameFinishStep()
+        assert str(step) == "0:gamefinish:"
+
+    def test_process_1(self, get_step_classes, is_equal_candidates):
+        game = Game()
+        game.set_players([Player(0), Player(1), Player(2)])
+        game.set_supply([])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(3, 1), Card(4, 2)
+            ]
+        )
+        game.players[1].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [
+                    Card(3, 3), Card(5, 4)
+                ]
+            ]
+        )
+        game.players[2].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(3, 5), Card(4, 6)
+            ]
+        )
+        game.players[0].orbit = 35.2
+        game.players[1].orbit = 35.1
+        game.players[2].orbit = 35
+        step = GameFinishStep()
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+        assert game.phase == Phase.FINISH
+        assert game.winner_id == 1
+        assert game.result == [
+            {"point": 5, "rank": 3, "player_id": 0, "cards": [3, 4]},
+            {"point": 9, "rank": 1, "player_id": 1, "cards": [3, 5]},
+            {"point": 5, "rank": 2, "player_id": 2, "cards": [3, 4]}
+        ]
