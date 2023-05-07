@@ -11,6 +11,7 @@ class Phase(Enum):
     GENERATE = "generate"
     CLEAN_UP = "cleanup"
     TURN_END = "turn_end"
+    FINISH = "finish"
 
 
 class TurnType(Enum):
