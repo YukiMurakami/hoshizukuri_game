@@ -2,6 +2,7 @@ from hoshizukuri_game.models.card import Card
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
 from hoshizukuri_game.models.player import Player
+from hoshizukuri_game.models.turn import Turn, TurnType
 from hoshizukuri_game.utils.card_util import get_card_id
 import random
 
@@ -205,3 +206,18 @@ class TestGame:
             card_id=3, orbit_index=1)
         assert str(game.supply[3]) == "{3:11}"
         assert str(field) == "[[1-1,1-2,4-3],[1-4,3-1]]"
+
+    def test_update_starflake(self):
+        game = Game()
+        game.set_players([Player(0)])
+        game.set_supply([n for n in range(6, 14)])
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1), Card(1, 2), Card(4, 3)],
+                [Card(1, 4)]
+            ]
+        )
+        game.starflake = 0
+        game.turn = Turn(5, 5, 0, TurnType.NORMAL)
+        game.update_starflake()
+        assert game.starflake == 4

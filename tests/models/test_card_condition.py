@@ -5,8 +5,8 @@ from hoshizukuri_game.models.card_condition import (
     get_match_card_ids
 )
 from hoshizukuri_game.models.cost import Cost
-from hoshizukuri_game.utils.card_util import get_card_id
-from hoshizukuri_game.models.card import Card, CardType
+from hoshizukuri_game.utils.card_util import get_card_id, CardType
+from hoshizukuri_game.models.card import Card
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.pile import Pile, PileType
 

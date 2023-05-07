@@ -1,4 +1,3 @@
-from hoshizukuri_game.models.card import CardType
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
 from hoshizukuri_game.models.player import Player
 from hoshizukuri_game.models.game import Game
@@ -10,6 +9,7 @@ from hoshizukuri_game.steps.common.gain_step import (
 from hoshizukuri_game.models.card_condition import CardCondition
 from hoshizukuri_game.steps.abstract_step import AbstractStep
 from hoshizukuri_game.models.cost import Cost
+from hoshizukuri_game.utils.card_util import CardType
 
 
 class TestGainStep():

@@ -20,6 +20,7 @@ import random
 from ..utils.card_util import (
     get_card_id
 )
+from .pile import PileName
 
 
 class Game:
@@ -229,3 +230,12 @@ class Game:
                 else:
                     to_pile.push(move_card)
         return moved_uniq_ids
+
+    def update_starflake(self):
+        starflake = 0
+        player_id = self.turn.player_id
+        for card_list in self.players[
+                player_id].pile[PileName.FIELD].card_list:
+            for card in card_list:
+                starflake += card.starflake
+        self.starflake = starflake

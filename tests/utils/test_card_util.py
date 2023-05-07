@@ -13,9 +13,10 @@ from hoshizukuri_game.utils.card_util import (
     get_colors,
     get_vp,
     get_starflake,
+    CardType, CardColor
 )
 from hoshizukuri_game.models.game import Game
-from hoshizukuri_game.models.card import CardType, Card, CardColor
+from hoshizukuri_game.models.card import Card
 from hoshizukuri_game.models.pile import Pile, PileType
 from hoshizukuri_game.models.cost import Cost
 import pytest

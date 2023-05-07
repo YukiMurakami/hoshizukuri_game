@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Dict, List, Union
 if TYPE_CHECKING:
     from ..models.game import Game
-from .card import CardType, Card
+from .card import Card
+from ..utils.card_util import CardType
 from .cost import Cost
 from .pile import Pile, PileType
 from ..utils.card_util import (

@@ -3,8 +3,7 @@ This module defines the Player model.
 """
 from .pile import Pile, PileName, PileType
 from typing import Dict
-from .card import CardColor
-from ..utils.card_util import get_colors
+from ..utils.card_util import get_colors, CardColor
 
 
 class Player:

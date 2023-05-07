@@ -2,20 +2,7 @@
 This module defines the Card model.
 """
 from __future__ import annotations
-from enum import Enum
-
-
-class CardType(Enum):
-    STAR = "star"
-    INITIAL = "initial"
-    CELESTIAL = "celestial"
-
-
-class CardColor(Enum):
-    NEUTRAL = "neutral"
-    RED = "red"
-    BLUE = "blue"
-    GREEN = "green"
+from ..utils.card_util import get_starflake
 
 
 class Card:
@@ -32,6 +19,7 @@ class Card:
     def __init__(self, card_id: int, uniq_id: int):
         self.id = card_id
         self.uniq_id = uniq_id
+        self.starflake = get_starflake(card_id)
 
     def __str__(self):
         return "%d-%d" % (self.id, self.uniq_id)

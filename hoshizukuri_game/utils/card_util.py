@@ -7,10 +7,23 @@ if TYPE_CHECKING:
     from ..models.card import Card
     from ..models.pile import Pile
     from ..models.game import Game
+from enum import Enum
 import os
 import yaml
 from ..models.cost import Cost
-from ..models.card import CardType, CardColor
+
+
+class CardType(Enum):
+    STAR = "star"
+    INITIAL = "initial"
+    CELESTIAL = "celestial"
+
+
+class CardColor(Enum):
+    NEUTRAL = "neutral"
+    RED = "red"
+    BLUE = "blue"
+    GREEN = "green"
 
 
 class CardData:

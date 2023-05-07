@@ -15,14 +15,13 @@ from .common.gain_step import GainStep
 from .common.discard_step import DiscardStep
 from ..models.turn import Phase
 from ..models.pile import PileName, PileType
-from ..models.card import CardColor
 from ..models.cost import Cost
 from ..models.card_condition import (
     CardCondition,
     get_match_card_ids
 )
 from ..utils.card_util import (
-    get_colors, get_cost, ids2uniq_ids
+    get_colors, get_cost, ids2uniq_ids, CardColor
 )
 from ..utils.other_util import (
     make_permutation
