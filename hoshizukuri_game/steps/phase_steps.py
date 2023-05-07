@@ -281,18 +281,38 @@ class OrbitAdvanceStep(AbstractStep):
     def __str__(self):
         return "%d:orbitadvance:%d" % (self.depth, self.player_id)
 
+    def _advance(self, game: Game, next_orbit: float, e_player_id: int):
+        next_orbit = int(next_orbit)
+        add_float = 0
+        for player_id in range(len(game.players)):
+            if player_id != e_player_id:
+                enemy_orbit = int(game.players[player_id].orbit)
+                if enemy_orbit == next_orbit:
+                    add_float += 0.1
+        game.players[e_player_id].orbit = next_orbit + add_float
+
     def process(self, game: Game):
         game.phase = Phase.ORBIT
         game.players[self.player_id].update_tmp_orbit(game)
-        now_orbit = int(game.players[self.player_id].tmp_orbit)
-        add_float = 0
-        for player_id in range(len(game.players)):
-            if player_id != self.player_id:
-                enemy_orbit = int(game.players[player_id].orbit)
-                if enemy_orbit == now_orbit:
-                    add_float += 0.1
-        next_orbit = now_orbit + add_float
-        game.players[self.player_id].orbit = next_orbit
+        self._advance(
+            game, game.players[self.player_id].tmp_orbit, self.player_id)
+        # When orbit is 35, increase the other player's arbit.
+        if int(game.players[self.player_id].orbit) == 35:
+            moves = []
+            for player_id in range(len(game.players)):
+                if player_id != self.player_id:
+                    if game.players[player_id].orbit < 35:
+                        moves.append([
+                            int(game.players[player_id].orbit),
+                            game.players[player_id].orbit - int(
+                                game.players[player_id].orbit),
+                            player_id])
+            moves = sorted(
+                moves, key=lambda x: (x[0], x[1] * -1), reverse=True)
+            for player_id in [n[2] for n in moves]:
+                self._advance(
+                    game, game.players[player_id].orbit + 1, player_id
+                )
         return [GenerateSelectStep(self.player_id)]
 
 

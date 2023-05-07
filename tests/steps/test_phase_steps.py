@@ -361,6 +361,31 @@ class TestOrbitAdvanceStep:
         assert game.players[0].orbit == 17.1
         assert game.phase == Phase.ORBIT
 
+    def test_process_2(self, get_step_classes):
+        step = OrbitAdvanceStep(0)
+        game = Game()
+        game.phase = Phase.PLAY
+        game.set_players([Player(0), Player(1), Player(2), Player(3)])
+        game.set_supply([])
+        game.players[0].orbit = 33
+        game.players[1].orbit = 24.1
+        game.players[2].orbit = 18.2
+        game.players[3].orbit = 24
+        game.players[0].tmp_orbit = 35
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1)],
+                [Card(1, 2)]
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [GenerateSelectStep]
+        assert game.players[0].orbit == 35
+        assert game.players[1].orbit == 25.1
+        assert game.players[2].orbit == 19
+        assert game.players[3].orbit == 25
+        assert game.phase == Phase.ORBIT
+
 
 class TestGenerateSelectStep:
     def test_str(self):
