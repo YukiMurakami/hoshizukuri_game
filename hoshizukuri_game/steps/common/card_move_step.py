@@ -11,7 +11,7 @@ from ...models.card import Card
 from ...models.card_condition import CardCondition, get_match_card_ids
 from ...utils.card_util import ids2uniq_ids
 from ...utils.other_util import make_combination, make_permutation
-from ...utils.choice_util import cparsell
+from ...utils.choice_util import cparsell, is_included_candidates
 from .shuffle_step import ReshuffleStep
 
 
@@ -300,7 +300,8 @@ def select_process(
                 uniq_ids=uniq_ids,
             )
         ] + previous_step_callback(card_ids, uniq_ids, game)
-    if game.choice == "" or game.choice not in candidates:
+    if game.choice == "" or not is_included_candidates(
+            game.choice, candidates):
         source_step.candidates = candidates
         return [source_step]
     else:

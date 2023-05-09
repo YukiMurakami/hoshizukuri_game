@@ -1,6 +1,8 @@
 """
 This module defines the utility functions about choice.
 """
+from typing import List
+import re
 
 
 def cparseii(choice: str):
@@ -88,3 +90,11 @@ def cparses(choice: str):
     assert len(div) >= 3
     param = ":".join(div[2:])
     return int(div[0]), div[1], param
+
+
+def is_included_candidates(choice: str, candidates: List[str]):
+    no_hyphen_candidates = [
+        re.sub(r"(\d)-(\d)", "\\1", n) for n in candidates
+    ]
+    no_hyphen_choice = re.sub(r"(\d)-(\d)", "\\1", choice)
+    return no_hyphen_choice in no_hyphen_candidates

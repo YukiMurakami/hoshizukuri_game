@@ -29,7 +29,8 @@ from ..utils.other_util import (
 from ..utils.choice_util import (
     cparsei,
     cparseii,
-    cparsell
+    cparsell,
+    is_included_candidates
 )
 from ..utils.kingdom_step_util import get_kingdom_steps
 from itertools import product
@@ -111,7 +112,8 @@ class PlaySelectStep(AbstractStep):
         if game.created:
             return [OrbitAdvanceStep(self.player_id)]
         candidates = self._create_candidates(game)
-        if game.choice == "" or game.choice not in candidates:
+        if game.choice == "" or not is_included_candidates(
+                game.choice, candidates):
             self.candidates = candidates
             return [self]
         else:
@@ -195,7 +197,8 @@ class PlayCardSelectStep(AbstractStep):
             return [PlayContinueStep(self.player_id)]
         if len(candidates) == 1:
             game.choice = candidates[0]
-        if game.choice == "" or game.choice not in candidates:
+        if game.choice == "" or not is_included_candidates(
+                game.choice, candidates):
             self.candidates = candidates
             return [self]
         else:
@@ -336,7 +339,8 @@ class GenerateSelectStep(AbstractStep):
         game.update_starflake()
         assert game.turn.player_id == self.player_id
         candidates = self._create_candidates(game)
-        if game.choice == "" or game.choice not in candidates:
+        if game.choice == "" or not is_included_candidates(
+                game.choice, candidates):
             self.candidates = candidates
             return [self]
         else:
