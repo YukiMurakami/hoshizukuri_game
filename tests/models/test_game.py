@@ -24,10 +24,10 @@ class TestGame:
         game.set_players(players=players)
         game.set_supply([n for n in range(6, 14)])
         supply1 = game.supply[get_card_id("eisei")]
-        assert supply1.count == 12
+        assert supply1.count == 2
         assert supply1.pile_card_id == get_card_id("eisei")
         supply2 = game.supply[get_card_id("honow")]
-        assert supply2.count == 10
+        assert supply2.count == 4
         assert supply2.pile_card_id == get_card_id("honow")
 
     def test_set_supply2(self):
@@ -39,10 +39,10 @@ class TestGame:
         game.set_players(players=players)
         game.set_supply([n for n in range(6, 16)])
         supply1 = game.supply[get_card_id("eisei")]
-        assert supply1.count == 12
+        assert supply1.count == 1
         assert supply1.pile_card_id == get_card_id("eisei")
         supply2 = game.supply[get_card_id("honow")]
-        assert supply2.count == 10
+        assert supply2.count == 4
         assert supply2.pile_card_id == get_card_id("honow")
 
     def test_set_initial_step(self):
@@ -67,17 +67,17 @@ class TestGame:
             "trash": [],
             "turn": "1:0:normal:0",
             "supply": {
-                3: "{3:12}",
-                4: "{4:12}",
-                5: "{5:12}",
-                6: "{6:10}",
-                7: "{7:10}",
-                8: "{8:10}",
-                9: "{9:10}",
-                10: "{10:10}",
-                11: "{11:10}",
-                12: "{12:10}",
-                13: "{13:10}"
+                3: "{3:1}",
+                4: "{4:4}",
+                5: "{5:6}",
+                6: "{6:4}",
+                7: "{7:4}",
+                8: "{8:4}",
+                9: "{9:4}",
+                10: "{10:4}",
+                11: "{11:4}",
+                12: "{12:4}",
+                13: "{13:4}"
             },
             "created": False,
         }
@@ -140,7 +140,7 @@ class TestGame:
         )
         discard = game.players[0].pile[PileName.DISCARD]
         game.move_card(game.supply[8], discard, card_id=8)
-        assert str(game.supply[8]) == "{8:9}"
+        assert str(game.supply[8]) == "{8:3}"
         assert str(discard) == "[1-1,1-2,4-3,8-1]"
 
     def test_move_card_4(self):
@@ -154,7 +154,7 @@ class TestGame:
         )
         discard = game.players[0].pile[PileName.DISCARD]
         game.move_card(game.supply[8], discard, card_id=8, reverse=True)
-        assert str(game.supply[8]) == "{8:9}"
+        assert str(game.supply[8]) == "{8:3}"
         assert str(discard) == "[8-1,1-1,1-2,4-3]"
 
     def test_move_card_5(self):
@@ -204,7 +204,7 @@ class TestGame:
             game.supply[3],
             field,
             card_id=3, orbit_index=1)
-        assert str(game.supply[3]) == "{3:11}"
+        assert str(game.supply[3]) == "{3:0}"
         assert str(field) == "[[1-1,1-2,4-3],[1-4,3-1]]"
 
     def test_update_starflake(self):

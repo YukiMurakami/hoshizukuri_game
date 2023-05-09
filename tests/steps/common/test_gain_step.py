@@ -32,7 +32,7 @@ class TestGainStep():
         step = GainStep(0, 0, 3)
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
-        assert game.supply[3].count == 11
+        assert game.supply[3].count == 2 * 1 - 1
         assert str(game.players[0].pile[PileName.DISCARD]) == "[3-1]"
 
     def test_process_gain_nocard(self, get_step_classes):

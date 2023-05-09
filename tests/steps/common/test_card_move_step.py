@@ -199,7 +199,7 @@ class TestCardMoveStep:
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
         assert str(game.players[0].pile[PileName.HAND]) == "[3-1]"
-        assert game.supply[3].count == 11
+        assert game.supply[3].count == 0
 
     def test_process_7(self, get_step_classes):
         # empty supply to hand

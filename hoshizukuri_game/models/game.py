@@ -121,14 +121,14 @@ class Game:
 
     def _get_start_supply_count(self, card_id: int, player_num: int):
         dic = {
-            "eisei": 12,
-            "wakusei": 12,
-            "kousei": 12
+            "eisei": 1 * player_num,
+            "wakusei": 4 * player_num,
+            "kousei": 6 * player_num
         }
         for k in dic:
             if get_card_id(k) == card_id:
                 return dic[k]
-        return 10
+        return 2 * player_num if player_num >= 2 else 4
 
     def get_status_json(self):
         supply = {}
