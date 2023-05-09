@@ -3,6 +3,7 @@ from hoshizukuri_game.utils.choice_util import (
     cparsei,
     cparsell,
     cparses,
+    is_included_candidates,
 )
 
 
@@ -67,3 +68,17 @@ class TestChoiceUtil:
         assert player_id == 1
         assert command == "triggerselect"
         assert param == "moatreaction:23-1"
+
+    def test_is_included_candidates(self):
+        assert is_included_candidates(
+            "0:playset:1-1,2-3,3-4",
+            [
+                "0:playset:1,2,3"
+            ]
+        )
+        assert is_included_candidates(
+            "0:playset:6-8,7-11",
+            [
+                "0:playset:6,7"
+            ]
+        )
