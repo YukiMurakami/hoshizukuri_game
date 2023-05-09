@@ -61,6 +61,7 @@ class CardMoveStep(AbstractStep):
         self.uniq_ids = uniq_ids
         self.count = count
         self.next_step_callback = next_step_callback
+        self.orbit_index = None
         if self.next_step_callback is None:
             self.next_step_callback = self._default_callback
         if from_pilename == PileName.DECK and count is None:
@@ -126,14 +127,14 @@ class CardMoveStep(AbstractStep):
         if from_pile is not game.supply:
             if self.uniq_ids is None or len(self.uniq_ids) == 0:
                 self.uniq_ids = ids2uniq_ids(from_pile, self.card_ids, game)
-            orbit_index = None
+            self.orbit_index = None
             if to_pile.type == PileType.LISTLIST:
-                orbit_index = len(to_pile.card_list)
+                self.orbit_index = len(to_pile.card_list)
             game.move_card(
                 from_pile,
                 to_pile,
                 uniq_ids=self.uniq_ids,
-                orbit_index=orbit_index
+                orbit_index=self.orbit_index
             )
             self._after_process_callback(self.card_ids, self.uniq_ids, game)
         else:

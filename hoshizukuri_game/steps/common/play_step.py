@@ -38,13 +38,17 @@ class PlayStep(CardMoveStep):
 
     def _get_step_string(self):
         pilename = self.from_pilename.value
-        return "%d:play:%s:%d:%s" % (
+        orbit_index = "none"
+        if self.orbit_index is not None:
+            orbit_index = "%d" % self.orbit_index
+        return "%d:play:%s:%d:%s:%s" % (
             self.depth,
             pilename,
             self.player_id, ",".join(
                 ["%d-%d" % (self.card_ids[n], self.uniq_ids[
                     n]) for n in range(len(self.uniq_ids))]
-            )
+            ),
+            orbit_index
         )
 
     def process(self, game: Game):

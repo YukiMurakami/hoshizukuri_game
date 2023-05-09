@@ -12,9 +12,15 @@ from hoshizukuri_game.steps.common_card_steps import (
 
 class TestPlayStep:
     def test_str(self):
+        game = Game()
+        game.set_players([Player(0)])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[Card(1, 1)]
+        )
         step = PlayStep(
             0, 0, [1], [1], from_pilename=PileName.HAND)
-        assert str(step) == "0:play:hand:0:1-1"
+        step.process(game)
+        assert str(step) == "0:play:hand:0:1-1:0"
 
     def test_process_1(self, get_step_classes):
         step = PlayStep(
