@@ -13,14 +13,26 @@ class TestHoshizukuriGame:
         game.set_players([Player(0), Player(1)])
         game.set_supply([n for n in range(8, 17)])
         game.set_initial_step()
-        candidates = simulator.simulate(game)
+        result = simulator.simulate(game)
         assert is_equal_candidates(
-            candidates,
+            result["candidates"],
             [
                 '0:playset:1#0',
                 '0:playset:3#0'
             ]
         )
+        assert result["steps"] == [
+            '0:preparefirstdeck:0',
+            '0:preparefirstdeck:1',
+            '0:reshuffle:0:3-7,1-1,3-6,1-2,3-5,1-3,2-4',
+            '0:reshuffle:1:3-13,3-12,2-11,3-14,1-8,1-9,1-10',
+            '0:pre-draw:0:4',
+            '0:draw:0:3-7,1-1,3-6,1-2',
+            '0:pre-draw:1:4',
+            '0:draw:1:3-13,3-12,2-11,3-14',
+            '0:turnstart:1:0:normal:0',
+            '0:playselect:0'
+        ]
 
     def test_simulate_nocandidates(self):
         simulator = HoshizukuriGame()
@@ -29,5 +41,8 @@ class TestHoshizukuriGame:
         game.set_supply([n for n in range(8, 17)])
         game.set_initial_step()
         game.stack = [AbstractStep()]
-        candidates = simulator.simulate(game)
-        assert candidates == []
+        result = simulator.simulate(game)
+        assert result["candidates"] == []
+        assert result["steps"] == [
+            "0:abstract"
+        ]

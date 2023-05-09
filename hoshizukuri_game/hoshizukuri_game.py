@@ -25,13 +25,19 @@ class HoshizukuriGame:
                 to move the game status,
                 If game is finished, this is empty list.
         """
+        steps = []
+        candidates = []
         game.choice = choice
         while len(game.stack) > 0:
             step = game.stack.pop()
             next_steps = step.process(game)
+            steps.append(str(step))
             if len(next_steps) > 0:
                 game.stack += next_steps
             candidates = step.get_candidates(game)
             if len(candidates) > 0:
-                return candidates
-        return []
+                break
+        return {
+            "steps": steps,
+            "candidates": candidates
+        }
