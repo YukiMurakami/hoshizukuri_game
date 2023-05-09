@@ -8,6 +8,7 @@ from ..steps.common_card_steps import (
 from ..steps.abstract_step import AbstractStep
 from ..steps.base.seiun_step import SeiunStep
 from ..steps.base.genshisei_step import GenshiseiStep
+from ..steps.base.ikaduchi_step import IkaduchiStep
 
 
 def get_kingdom_steps(
@@ -29,6 +30,7 @@ def get_kingdom_steps(
     if org_id == 0:
         org_id = card_id
     step_dic = {
+        "ikaduchi": IkaduchiStep,
         "seiun": SeiunStep, "genshisei": GenshiseiStep,
         "wakusei": WakuseiStep, "kousei": KouseiStep,
         "hoshikuzu": HoshikuzuStep, "ganseki": GansekiStep, "eisei": EiseiStep,
