@@ -89,7 +89,7 @@
   type: celestial
   vp: 0
 - color: green
-  cost: 6
+  cost: 4
   create: false
   expansion: Base
   id: 10
@@ -99,7 +99,7 @@
   type: celestial
   vp: 0
 - color: green
-  cost: 6
+  cost: 4
   create: false
   expansion: Base
   id: 11
@@ -119,7 +119,7 @@
   type: celestial
   vp: 0
 - color: green
-  cost: 6
+  cost: 4
   create: false
   expansion: Base
   id: 13
