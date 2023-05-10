@@ -21,6 +21,12 @@ class Card:
         self.uniq_id = uniq_id
         self.starflake = get_starflake(card_id)
         self.create = is_create(card_id)
+        self.stop_orbit = False
 
     def __str__(self):
         return "%d-%d" % (self.id, self.uniq_id)
+
+    def reset(self):
+        self.starflake = get_starflake(self.id)
+        self.create = is_create(self.id)
+        self.stop_orbit = False

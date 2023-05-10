@@ -58,6 +58,13 @@ class Player:
         for card_list in self.pile[PileName.FIELD].card_list:
             if len(card_list) <= 0:
                 continue
+            stop_orbit = False
+            for card in card_list:
+                if hasattr(card, "stop_orbit") and card.stop_orbit:
+                    stop_orbit = True
+                    break
+            if stop_orbit:
+                continue
             color_check = {
                 CardColor.RED: False,
                 CardColor.BLUE: False,

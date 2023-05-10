@@ -42,6 +42,8 @@ class TestPlayer:
 
     def test_update_tmp_orbit(self):
         player = Player(player_id=0)
+        kori = Card(card_id=get_card_id("kori"), uniq_id=12)
+        kori.stop_orbit = True
         player.pile[PileName.FIELD] = Pile(
             PileType.LISTLIST, card_list=[
                 [
@@ -56,7 +58,9 @@ class TestPlayer:
                     Card(card_id=get_card_id("mizu"), uniq_id=10),
                     Card(card_id=get_card_id("shinrin"), uniq_id=11)
                 ],
-                [],
+                [
+                    kori, Card(card_id=get_card_id("mizu"), uniq_id=13)
+                ],
                 []
             ]
         )
