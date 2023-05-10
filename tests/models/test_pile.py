@@ -350,3 +350,8 @@ class TestPile:
         pile.remove_at(0, 0)
         assert str(pile) == "[[2-2,2-3,3-4]]"
         assert pile.count == 3
+
+    def test_get_card_1(self):
+        pile = Pile(PileType.LIST, card_list=[Card(1, 1), Card(1, 2)])
+        assert pile.get_card(2).id == 1
+        assert pile.get_card(3) is None

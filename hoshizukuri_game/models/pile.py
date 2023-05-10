@@ -204,3 +204,15 @@ class Pile:
             del self.card_list[index][sub_index]
             if len(self.card_list[index]) == 0:
                 del self.card_list[index]
+
+    def get_card(self, uniq_id: int):
+        if self.type == PileType.LIST:
+            for card in self.card_list:
+                if card.uniq_id == uniq_id:
+                    return card
+        elif self.type == PileType.LISTLIST:
+            for cardlist in self.card_list:
+                for card in cardlist:
+                    if card.uniq_id == uniq_id:
+                        return card
+        return None
