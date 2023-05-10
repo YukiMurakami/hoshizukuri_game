@@ -15,6 +15,7 @@ from hoshizukuri_game.steps.phase_steps import (
     PlaySelectStep,
     GenerateSelectStep,
     CleanupStep,
+    CleanupDiscardHandStep,
     UpdateTurnStep,
 )
 from hoshizukuri_game.models.turn import Phase, Turn, TurnType
@@ -480,6 +481,71 @@ class TestCleanupStep:
         ]
         next_steps[1].count == 1
         assert game.phase == Phase.CLEAN_UP
+
+    def test_process_2(self, get_step_classes, is_equal_candidates):
+        step = CleanupStep(0)
+        game = Game()
+        game.phase = Phase.GENERATE
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1)],
+                [Card(1, 2), Card(2, 3)]
+            ]
+        )
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 4), Card(2, 5), Card(3, 6),
+                Card(1, 7), Card(2, 8)
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            UpdateTurnStep, CleanupDiscardHandStep, DiscardStep, DiscardStep
+        ]
+        assert game.phase == Phase.CLEAN_UP
+
+
+class TestCleanupDiscardHandStep:
+    def test_str(self):
+        step = CleanupDiscardHandStep(0)
+        assert str(step) == "0:cleanupdiscardhand:0"
+
+    def test_process_1(self, get_step_classes, is_equal_candidates):
+        step = CleanupDiscardHandStep(0)
+        game = Game()
+        game.set_players([Player(0)])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(1, 3),
+                Card(2, 4), Card(2, 5)
+            ]
+        )
+        game.choice = ""
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [CleanupDiscardHandStep]
+        assert is_equal_candidates(
+            next_steps[0].get_candidates(game),
+            [
+                "0:cleanupdiscard:1#0",
+                "0:cleanupdiscard:2#0"
+            ]
+        )
+
+    def test_process_2(self, get_step_classes, is_equal_candidates):
+        step = CleanupDiscardHandStep(0)
+        game = Game()
+        game.set_players([Player(0)])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(1, 3),
+                Card(2, 4), Card(2, 5)
+            ]
+        )
+        game.choice = "0:cleanupdiscard:2"
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [DiscardStep]
 
 
 class TestUpdateTurnStep:

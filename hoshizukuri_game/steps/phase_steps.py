@@ -12,7 +12,7 @@ from .common.play_step import PlayStep
 from .common.draw_step import DrawStep
 from .common.starflake_step import AddStarflakeStep
 from .common.gain_step import GainStep
-from .common.discard_step import DiscardStep
+from .common.discard_step import DiscardStep, discard_select_process
 from ..models.turn import Phase
 from ..models.pile import PileName, PileType
 from ..models.cost import Cost
@@ -398,13 +398,48 @@ class CleanupStep(AbstractStep):
                     from_pilename=PileName.FIELD
                 )
             )
-        # draw up to 4.
+        # draw up to 4 or discard down to 4.
         hand_count = game.players[self.player_id].pile[PileName.HAND].count
         draw_steps = []
         if hand_count < 4:
             draw_steps = [DrawStep(
                 self.player_id, self.depth, 4 - hand_count)]
+        elif hand_count > 4:
+            draw_steps = [CleanupDiscardHandStep(self.player_id)]
+        # reset all cards
+        for player_id in range(len(game.players)):
+            for v in game.players[player_id].pile.values():
+                if v.type == PileType.LIST:
+                    for c in v.card_list:
+                        c.reset()
+                elif v.type == PileType.LISTLIST:
+                    for cl in v.card_list:
+                        for c in cl:
+                            c.reset()
         return [UpdateTurnStep(self.player_id)] + draw_steps + steps
+
+
+class CleanupDiscardHandStep(AbstractStep):
+    """
+    cleanup discard hand step.
+
+    Args:
+        player_id (int): turn player ID.
+    """
+    def __init__(self, player_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = 0
+
+    def __str__(self):
+        return "%d:cleanupdiscardhand:%d" % (self.depth, self.player_id)
+
+    def process(self, game: Game):
+        hands = game.players[self.player_id].pile[PileName.HAND].card_list
+        assert len(hands) >= 5
+        return discard_select_process(
+            game, self, "cleanupdiscard", len(hands) - 4
+        )
 
 
 class UpdateTurnStep(AbstractStep):
