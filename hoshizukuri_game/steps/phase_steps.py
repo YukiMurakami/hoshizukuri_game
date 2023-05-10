@@ -36,6 +36,9 @@ from ..utils.kingdom_step_util import get_kingdom_steps
 from itertools import product
 
 
+FINISH_ORBIT = 35
+
+
 class TurnStartStep(AbstractStep):
     """
     This is TurnStartStep.
@@ -105,7 +108,7 @@ class PlaySelectStep(AbstractStep):
         game.phase = Phase.PLAY
         assert game.turn.player_id == self.player_id
         game.players[self.player_id].update_tmp_orbit(game)
-        if game.players[self.player_id].tmp_orbit >= 35:
+        if game.players[self.player_id].tmp_orbit >= FINISH_ORBIT:
             return [OrbitAdvanceStep(self.player_id)]
         if game.players[self.player_id].pile[PileName.HAND].count <= 0:
             return [OrbitAdvanceStep(self.player_id)]
@@ -255,7 +258,7 @@ class PlayContinueStep(AbstractStep):
                 game.created = True
                 break
         game.players[self.player_id].update_tmp_orbit(game)
-        if game.players[self.player_id].tmp_orbit >= 35:
+        if game.players[self.player_id].tmp_orbit >= FINISH_ORBIT:
             return [OrbitAdvanceStep(self.player_id)]
         if game.created:
             return [OrbitAdvanceStep(self.player_id)]
@@ -300,11 +303,11 @@ class OrbitAdvanceStep(AbstractStep):
         self._advance(
             game, game.players[self.player_id].tmp_orbit, self.player_id)
         # When orbit is 35, increase the other player's arbit.
-        if int(game.players[self.player_id].orbit) == 35:
+        if int(game.players[self.player_id].orbit) == FINISH_ORBIT:
             moves = []
             for player_id in range(len(game.players)):
                 if player_id != self.player_id:
-                    if game.players[player_id].orbit < 35:
+                    if game.players[player_id].orbit < FINISH_ORBIT:
                         moves.append([
                             int(game.players[player_id].orbit),
                             game.players[player_id].orbit - int(
@@ -469,7 +472,7 @@ class UpdateTurnStep(AbstractStep):
             if min_orbit > orbit:
                 min_orbit = orbit
                 next_player_id = player_id
-        if min_orbit >= 35:
+        if min_orbit >= FINISH_ORBIT:
             # finish
             return [GameFinishStep()]
         turn = Turn(
