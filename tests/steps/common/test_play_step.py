@@ -2,8 +2,9 @@ from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.player import Player
 from hoshizukuri_game.models.pile import Pile, PileType, PileName
 from hoshizukuri_game.models.card import Card
+from hoshizukuri_game.steps.abstract_step import AbstractStep
 from hoshizukuri_game.steps.common.play_step import (
-    PlayStep, PlayEndStep
+    PlayStep, PlayEndStep, play_add_select_process
 )
 from hoshizukuri_game.steps.common_card_steps import (
     EiseiStep, HoshikuzuStep
@@ -98,3 +99,41 @@ class TestPlayEndStep:
         )
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
+
+
+class TestPlayAddSelectProcess():
+    def game_and_step(self, card_list):
+        game = Game()
+        game.set_players([Player(0), Player(1)])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=card_list
+        )
+        step = AbstractStep()
+        step.player_id = 0
+        return game, step
+
+    def test_playadd_select_process_1(self):
+        game, step = self.game_and_step(
+            [Card(1, 1), Card(4, 2)])
+        next_steps = play_add_select_process(
+            game, step, "playadd", 2, can_less=True,
+            next_step_callback=None
+        )
+        assert isinstance(next_steps[-1], AbstractStep)
+        assert next_steps[-1].get_candidates(game) == [
+            "0:playadd:1#0",
+            "0:playadd:4#0",
+            "0:playadd:1,4#0",
+            "0:playadd:#0"
+        ]
+
+    def test_playadd_select_process_2(self):
+        game, step = self.game_and_step(
+            [Card(1, 1), Card(4, 2)])
+        game.choice = "0:playadd:1"
+        next_steps = play_add_select_process(
+            game, step, "playadd", 2, can_less=True,
+            next_step_callback=None
+        )
+        assert isinstance(next_steps[-1], PlayStep)
+        assert next_steps[-1].card_ids == [1]

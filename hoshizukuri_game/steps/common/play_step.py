@@ -2,13 +2,14 @@
 Steps for trash a card.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Callable, List
 if TYPE_CHECKING:
     from ...models.game import Game
 from ...models.pile import PileName
-from .card_move_step import CardMoveStep
+from .card_move_step import CardMoveStep, select_process
 from ..abstract_step import AbstractStep
 from ...utils.kingdom_step_util import get_kingdom_steps
+from ...models.card_condition import CardCondition
 
 
 class PlayStep(CardMoveStep):
@@ -99,3 +100,53 @@ class PlayEndStep(AbstractStep):
     def process(self, game: Game):
         game.update_starflake()
         return []
+
+
+def play_add_select_process(
+        game: Game, source_step: AbstractStep,
+        choice_name: str, count: int,
+        can_less: bool = False, from_pilename: PileName = PileName.HAND,
+        card_condition: CardCondition = None,
+        next_step_callback: Callable[
+            [List[int], List[int], Game], List[AbstractStep]] = None,
+        can_pass: bool = False):
+    """
+    Common process of selecting play_add cards.
+    This function is assumed to be used in each Steps.
+
+    Args:
+        game (Game): now game.
+        source_step (AbstractStep): the step which uses this process.
+        choice_name (str): choice command.
+        count (int): the number of play_added cards.
+        can_less (bool): True is for that the number of play_adds can be less.
+        from_pilename (PileName): This is where the card came from.
+        card_condition (CardCondition, Optional): condition of play_adds cards.
+        next_step_callback (Callable, Optional): After step, call this.
+        can_pass (bool): True is for that can play_add nothing.
+            When can_less is True, can_pass is meaningless.
+
+    Returns:
+        List[AbstractStep]: the next steps.
+    """
+    def create_step(
+            player_id: int, depth: int,
+            from_pilename: PileName, to_pilename: PileName,
+            card_ids: List[int], uniq_ids: List[int]):
+        orbit_index = len(game.players[player_id].pile[
+            PileName.FIELD].card_list) - 1
+        return PlayStep(
+            player_id, depth, card_ids,
+            uniq_ids=uniq_ids,
+            from_pilename=from_pilename,
+            process_effect=False,
+            orbit_index=orbit_index
+        )
+    return select_process(
+        create_step,
+        game, source_step, choice_name, count,
+        from_pilename, to_pilename=PileName.FIELD,
+        can_less=can_less, can_pass=can_pass,
+        card_condition=card_condition,
+        next_step_callback=next_step_callback
+    )
