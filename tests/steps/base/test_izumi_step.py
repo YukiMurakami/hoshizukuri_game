@@ -1,6 +1,6 @@
 from hoshizukuri_game.steps.base.izumi_step import (
     IzumiStep,
-    _IzumiSelectStep,
+    IzumiSelectStep,
 )
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.player import Player
@@ -31,7 +31,7 @@ class TestIzumiStep():
         assert get_step_classes(next_steps) == [LookStep]
         next_steps = next_steps[0].process(game)
         next_steps = next_steps[0].process(game)
-        assert get_step_classes(next_steps) == [_IzumiSelectStep]
+        assert get_step_classes(next_steps) == [IzumiSelectStep]
 
     def test_process_2(self, get_step_classes, is_equal_candidates):
         step = IzumiStep(0, 0, 0)
@@ -44,7 +44,7 @@ class TestIzumiStep():
 
 class TestIzumiSelectStep():
     def test_str(self):
-        step = _IzumiSelectStep(0, 0, 0)
+        step = IzumiSelectStep(0, 0, 0)
         assert str(step) == "0:izumiselect:0"
 
     def get_game(self, card_list):
@@ -56,10 +56,10 @@ class TestIzumiSelectStep():
         return game
 
     def test_process_1(self, get_step_classes, is_equal_candidates):
-        step = _IzumiSelectStep(0, 0, 0)
+        step = IzumiSelectStep(0, 0, 0)
         game = self.get_game([Card(1, 1)])
         next_steps = step.process(game)
-        assert get_step_classes(next_steps) == [_IzumiSelectStep]
+        assert get_step_classes(next_steps) == [IzumiSelectStep]
         assert is_equal_candidates(
             next_steps[0].get_candidates(game),
             [
@@ -69,14 +69,14 @@ class TestIzumiSelectStep():
         )
 
     def test_process_2(self, get_step_classes):
-        step = _IzumiSelectStep(0, 0, 0)
+        step = IzumiSelectStep(0, 0, 0)
         game = self.get_game([Card(1, 1)])
         game.choice = "0:izumi:hand"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [PutinHandStep]
 
     def test_process_3(self, get_step_classes):
-        step = _IzumiSelectStep(0, 0, 0)
+        step = IzumiSelectStep(0, 0, 0)
         game = self.get_game([Card(1, 1)])
         game.choice = "0:izumi:discard"
         next_steps = step.process(game)

@@ -34,7 +34,7 @@ class IzumiStep(AbstractStep):
     def callback(self, card_ids, uniq_ids, game: Game):
         if len(uniq_ids) <= 0:
             return []
-        return [_IzumiSelectStep(self.player_id, self.depth, self.uniq_id)]
+        return [IzumiSelectStep(self.player_id, self.depth, self.uniq_id)]
 
     def process(self, game: Game):
         return [
@@ -46,7 +46,7 @@ class IzumiStep(AbstractStep):
         ]
 
 
-class _IzumiSelectStep(AbstractStep):
+class IzumiSelectStep(AbstractStep):
     """
     Izumi select hand or discard step.
 
