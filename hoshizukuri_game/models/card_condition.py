@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Dict, List, Union
 if TYPE_CHECKING:
     from ..models.game import Game
 from .card import Card
-from ..utils.card_util import CardType
+from ..utils.card_util import CardType, CardColor, get_colors
 from .cost import Cost
 from .pile import Pile, PileType
 from ..utils.card_util import (
@@ -26,9 +26,8 @@ class CardCondition:
         eq_cost (Cost): Must be equal this cost.
         type (CardType): Must be this card type.
         create (bool): this have to have "create".
-
-    TODO:
-        Cost, etc.
+        color (CardColor): Must includes this card color.
+        not_card_id (int): Must not be this card ID.
     """
     def __init__(
             self, card_id: int = None,
@@ -37,7 +36,9 @@ class CardCondition:
             le_cost: Cost = None,
             eq_cost: Cost = None,
             type: CardType = None,
-            create: bool = None):
+            create: bool = None,
+            color: CardColor = None,
+            not_card_id: int = None):
         self.card_id = card_id
         self.uniq_id = uniq_id
         self.card_ids = card_ids
@@ -45,6 +46,8 @@ class CardCondition:
         self.eq_cost = eq_cost
         self.type = type
         self.create = create
+        self.color = color
+        self.not_card_id = not_card_id
 
     def __str__(self):
         strings = []
@@ -63,6 +66,10 @@ class CardCondition:
             strings.append("type=%s" % self.type.value)
         if self.create is not None:
             strings.append("create=%s" % self.create)
+        if self.color is not None:
+            strings.append("color=%s" % self.color.value)
+        if self.not_card_id is not None:
+            strings.append("not_id=%s" % self.not_card_id)
         return ",".join(strings)
 
 
@@ -170,5 +177,11 @@ def is_match_card(
             return False
     if condition.create is not None:
         if condition.create != is_create(card.id):
+            return False
+    if condition.color is not None:
+        if condition.color not in get_colors(card.id):
+            return False
+    if condition.not_card_id is not None:
+        if condition.not_card_id == card.id:
             return False
     return True

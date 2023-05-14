@@ -5,7 +5,7 @@ from hoshizukuri_game.models.card_condition import (
     get_match_card_ids
 )
 from hoshizukuri_game.models.cost import Cost
-from hoshizukuri_game.utils.card_util import get_card_id, CardType
+from hoshizukuri_game.utils.card_util import get_card_id, CardType, CardColor
 from hoshizukuri_game.models.card import Card
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.pile import Pile, PileType
@@ -45,6 +45,14 @@ class TestCardCondition:
     def test_card_condition_str8(self):
         cond = CardCondition(create=True)
         assert str(cond) == "create=True"
+
+    def test_card_condition_str9(self):
+        cond = CardCondition(color=CardColor.RED)
+        assert str(cond) == "color=red"
+
+    def test_card_condition_str10(self):
+        cond = CardCondition(not_card_id=3)
+        assert str(cond) == "not_id=3"
 
     def test_card_condition_1(self):
         game = Game()
@@ -208,3 +216,36 @@ class TestCardCondition:
 
         result = get_match_card_ids(piles, cond, game, uniq_flag=True)
         assert result == [10]
+
+    def test_get_match_card_ids6(self):
+        game = Game()
+        cond = CardCondition(color=CardColor.RED)
+        pile = Pile(PileType.LIST, card_list=[
+            Card(get_card_id("hoshikuzu"), 1),
+            Card(get_card_id("honow"), 2),
+            Card(get_card_id("mizu"), 3),
+            Card(get_card_id("kori"), 4),
+            Card(get_card_id("shinrin"), 5)
+        ])
+        result = get_match_card_ids(pile, cond, game)
+        assert result == [
+            get_card_id("honow")
+        ]
+
+    def test_get_match_card_ids7(self):
+        game = Game()
+        cond = CardCondition(not_card_id=get_card_id("hoshikuzu"))
+        pile = Pile(PileType.LIST, card_list=[
+            Card(get_card_id("hoshikuzu"), 1),
+            Card(get_card_id("honow"), 2),
+            Card(get_card_id("mizu"), 3),
+            Card(get_card_id("kori"), 4),
+            Card(get_card_id("shinrin"), 5)
+        ])
+        result = get_match_card_ids(pile, cond, game)
+        assert sorted(result) == sorted([
+            get_card_id("honow"),
+            get_card_id("mizu"),
+            get_card_id("kori"),
+            get_card_id("shinrin")
+        ])
