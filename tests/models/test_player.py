@@ -69,3 +69,15 @@ class TestPlayer:
         player.orbit = 10
         player.update_tmp_orbit(game)
         assert player.tmp_orbit == 12
+
+    def test_get_own_card_ids(self):
+        player = Player(0)
+        player.pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[Card(1, 1), Card(1, 2)]
+        )
+        player.pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(3, 3), Card(4, 4)]
+            ]
+        )
+        assert player.get_own_card_ids() == [1, 1, 3, 4]

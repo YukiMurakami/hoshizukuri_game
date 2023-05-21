@@ -78,3 +78,15 @@ class Player:
                 continue
             add_orbit += 1
         self.tmp_orbit = self.orbit + add_orbit
+
+    def get_own_card_ids(self):
+        card_ids = []
+        for v in self.pile.values():
+            if v.type == PileType.LIST:
+                for card in v.card_list:
+                    card_ids.append(card.id)
+            elif v.type == PileType.LISTLIST:
+                for cardlist in v.card_list:
+                    for card in cardlist:
+                        card_ids.append(card.id)
+        return card_ids
