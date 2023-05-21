@@ -7,6 +7,8 @@ if TYPE_CHECKING:
     from ..steps.abstract_step import AbstractStep
     from .player import Player
 from .pile import Pile, PileType
+from .variable import Variable, VariableName
+from .trigger import Trigger
 from ..steps.phase_steps import (
     TurnStartStep,
     PrepareFirstDeckStep,
@@ -39,6 +41,7 @@ class Game:
         start_deck (List[int]): The contents of start deck.
     """
     def __init__(self):
+        self.version = "1.0"
         self.supply: Dict[int, Pile] = {}
         self.trash: Pile = Pile(PileType.LIST, card_list=[])
         self.players: List[Player] = []
@@ -54,6 +57,8 @@ class Game:
         self._uniq_id = 0
         self.result: List[dict] = []
         self.winner_id: int = -1
+        self.triggers: List[Trigger] = []
+        self.variables: Dict[VariableName, Variable] = {}
 
     def make_card(self, card_id: int):
         """
