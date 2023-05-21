@@ -127,8 +127,7 @@ class CardMoveStep(AbstractStep):
         if from_pile is not game.supply:
             if self.uniq_ids is None or len(self.uniq_ids) == 0:
                 self.uniq_ids = ids2uniq_ids(from_pile, self.card_ids, game)
-            self.orbit_index = None
-            if to_pile.type == PileType.LISTLIST:
+            if to_pile.type == PileType.LISTLIST and self.orbit_index is None:
                 self.orbit_index = len(to_pile.card_list)
             game.move_card(
                 from_pile,
