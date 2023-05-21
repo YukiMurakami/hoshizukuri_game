@@ -1,3 +1,4 @@
+from hoshizukuri_game.models.activate import TargetActivate, ActivatePlaysetEnd
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.steps.abstract_step import AbstractStep
 
@@ -37,3 +38,9 @@ class TestAbstractStep:
         game = Game()
         result = step.get_candidates(game)
         assert result == ["0:actionplay:8#0"]
+
+    def test_can_play_trigger(self):
+        game = Game()
+        step = AbstractStep()
+        target_activate = TargetActivate(ActivatePlaysetEnd(0), 0)
+        assert step.can_play_trigger(game, target_activate)

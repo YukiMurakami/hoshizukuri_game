@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..models.game import Game
 import uuid
+from ..models.activate import TargetActivate
 
 
 class AbstractStep:
@@ -82,3 +83,21 @@ class AbstractStep:
                 candidates[i], choice_player_id
             )
         return candidates
+
+    def can_play_trigger(self, game: Game, activate: TargetActivate):
+        """
+        This is for Trigger Step.
+        This will be used for final check when Trigger Step will be activated.
+        Normally, a trigger step is set to trigger and fires
+        when its activate condition is satisfied.
+        This function adds more condition to it.
+
+        Args:
+            game (Game): Now game.
+            target_activate (TargetActivate): Which activate calls this step.
+
+        Returns:
+            bool: Finally, check whether can process trigger step.
+                Default is True.
+        """
+        return True
