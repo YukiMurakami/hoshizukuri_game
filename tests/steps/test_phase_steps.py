@@ -4,6 +4,7 @@ from hoshizukuri_game.steps.common.discard_step import DiscardStep
 from hoshizukuri_game.steps.common.draw_step import DrawStep
 from hoshizukuri_game.steps.common.gain_step import GainStep
 from hoshizukuri_game.steps.common.play_step import PlayStep
+from hoshizukuri_game.steps.common.call_trigger_step import CallTriggerStep
 from hoshizukuri_game.steps.common.starflake_step import AddStarflakeStep
 from hoshizukuri_game.steps.phase_steps import (
     GameFinishStep,
@@ -17,6 +18,7 @@ from hoshizukuri_game.steps.phase_steps import (
     CleanupStep,
     CleanupDiscardHandStep,
     UpdateTurnStep,
+    PlaysetEndStep,
 )
 from hoshizukuri_game.models.turn import Phase, Turn, TurnType
 from hoshizukuri_game.models.game import Game
@@ -225,7 +227,7 @@ class TestPlayCardSelectStep:
         game.choice = ""
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
-            PlayContinueStep
+            PlaysetEndStep
         ]
 
     def test_process_3(self, get_step_classes, is_equal_candidates):
@@ -247,6 +249,20 @@ class TestPlayCardSelectStep:
             PlayCardSelectStep, PlayStep
         ]
         assert next_steps[1].card_ids == [N]
+
+
+class TestPlaysetEndStep:
+    def test_str(self):
+        step = PlaysetEndStep(0)
+        assert str(step) == "0:playsetend:0"
+
+    def test_process(self, get_step_classes):
+        step = PlaysetEndStep(0)
+        game = Game()
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlayContinueStep, CallTriggerStep
+        ]
 
 
 class TestPlayContinueStep:

@@ -7,12 +7,14 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..models.game import Game
 from ..models.turn import Turn, TurnType
+from ..models.activate import ActivatePlaysetEnd, TargetActivate
 from .abstract_step import AbstractStep
 from .common.play_step import PlayStep
 from .common.draw_step import DrawStep
 from .common.starflake_step import AddStarflakeStep
 from .common.gain_step import GainStep
 from .common.discard_step import DiscardStep, discard_select_process
+from .common.call_trigger_step import CallTriggerStep
 from ..models.turn import Phase
 from ..models.pile import PileName, PileType
 from ..models.cost import Cost
@@ -197,7 +199,7 @@ class PlayCardSelectStep(AbstractStep):
     def process(self, game: Game):
         candidates = self._create_candidates(game)
         if len(candidates) == 0:
-            return [PlayContinueStep(self.player_id)]
+            return [PlaysetEndStep(self.player_id)]
         if len(candidates) == 1:
             game.choice = candidates[0]
         if game.choice == "" or not is_included_candidates(
@@ -233,6 +235,30 @@ class PlayCardSelectStep(AbstractStep):
             rest_id_uniq_ids.remove(id_uniq_id)
         return ["%d:play:%d" % (
             self.player_id, n[0]) for n in rest_id_uniq_ids]
+
+
+class PlaysetEndStep(AbstractStep):
+    """
+    Play set end step.
+
+    Args:
+        player_id (int): turn player ID.
+    """
+    def __init__(self, player_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = 0
+
+    def __str__(self):
+        return "%d:playsetend:%d" % (self.depth, self.player_id)
+
+    def process(self, game: Game):
+        trigger_steps = [CallTriggerStep(
+            self.player_id, self.depth, [TargetActivate(
+                ActivatePlaysetEnd, player_id=self.player_id
+            )]
+        )]
+        return [PlayContinueStep(self.player_id)] + trigger_steps
 
 
 class PlayContinueStep(AbstractStep):
