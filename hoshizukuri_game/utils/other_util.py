@@ -7,6 +7,28 @@ from ..models.card import Card
 import itertools
 
 
+def get_enemy_ids(player_id: int, player_num: int):
+    """
+    Get enemy IDs.
+
+    Args:
+        player_id (int): Player ID.
+        player_num (int): the number of players in game.
+
+    Returns:
+        List[int]: emeny IDs.
+    """
+    ids = []
+    now = player_id
+    for _ in range(player_num):
+        if now >= player_num:
+            now = 0
+        if now != player_id:
+            ids.append(now)
+        now += 1
+    return ids
+
+
 def make_combination(
         cards: Union[List[int], List[Card]], count: int, less_flag: bool):
     """

@@ -1,7 +1,15 @@
 from hoshizukuri_game.utils.other_util import (
-    make_combination, make_permutation
+    make_combination, make_permutation, get_enemy_ids
 )
 from hoshizukuri_game.models.card import Card
+
+
+class TestGetEnemyIds():
+    def test_get_enemy_ids_1(self):
+        assert get_enemy_ids(0, 3) == [1, 2]
+
+    def test_get_enemy_ids_2(self):
+        assert get_enemy_ids(2, 3) == [0, 1]
 
 
 class TestMakeCombination():
