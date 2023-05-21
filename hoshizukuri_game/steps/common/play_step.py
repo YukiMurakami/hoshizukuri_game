@@ -23,12 +23,14 @@ class PlayStep(CardMoveStep):
         uniq_ids (List[int], Optional): Play card unique IDS.
         from_pilename (PileName, Optional): Play cards from this.
         process_effect (bool, Optional): Default is True.
+        orbit_index (int, Optional): Added card index.
     """
     def __init__(
             self, player_id: int, depth: int, card_ids: List[int] = None,
             uniq_ids: List[int] = [],
             from_pilename: PileName = PileName.HAND,
-            process_effect: bool = True):
+            process_effect: bool = True,
+            orbit_index: int = None):
         super().__init__(
             player_id, depth, from_pilename=from_pilename,
             to_pilename=PileName.FIELD, card_ids=card_ids,
@@ -36,6 +38,7 @@ class PlayStep(CardMoveStep):
             next_step_callback=self._callback
         )
         self.process_effect = process_effect
+        self.orbit_index = orbit_index
 
     def _get_step_string(self):
         pilename = self.from_pilename.value
