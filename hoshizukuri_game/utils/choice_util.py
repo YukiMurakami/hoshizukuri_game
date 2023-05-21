@@ -97,5 +97,4 @@ def is_included_candidates(choice: str, candidates: List[str]):
         re.sub(r"(\d+)-(\d+)", "\\1", n) for n in candidates
     ]
     no_hyphen_choice = re.sub(r"(\d+)-(\d+)", "\\1", choice)
-    print(no_hyphen_choice, no_hyphen_candidates)
     return no_hyphen_choice in no_hyphen_candidates
