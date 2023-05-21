@@ -23,6 +23,9 @@ from ..steps.base.honow_step import HonowStep
 from ..steps.base.izumi_step import IzumiStep
 from ..steps.base.seiza_step import SeizaStep
 from ..steps.base.arashi_step import ArashiStep
+from ..steps.base.bisebutsu_step import BisebutsuStep
+from ..steps.base.daichi_step import DaichiStep
+from ..steps.base.inseki_step import InsekiStep
 
 
 def get_kingdom_steps(
@@ -44,7 +47,8 @@ def get_kingdom_steps(
     if org_id == 0:
         org_id = card_id
     step_dic = {
-        "arashi": ArashiStep,
+        "daichi": DaichiStep, "inseki": InsekiStep,
+        "arashi": ArashiStep, "bisebutsu": BisebutsuStep,
         "izumi": IzumiStep, "seiza": SeizaStep,
         "kudamononoki": KudamononokiStep, "honow": HonowStep,
         "kanketsusen": KanketsusenStep, "kori": KoriStep,
