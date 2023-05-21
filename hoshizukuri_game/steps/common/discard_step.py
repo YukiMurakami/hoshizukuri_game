@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ...models.game import Game
 from ..abstract_step import AbstractStep
 from ...models.pile import PileName
+from ...models.card_condition import CardCondition
 from .card_move_step import CardMoveStep, select_process
 
 
@@ -68,6 +69,7 @@ def discard_select_process(
         can_less: bool = False, from_pilename: PileName = PileName.HAND,
         next_step_callback: Callable[
             [List[int], List[int], Game], List[AbstractStep]] = None,
+        card_condition: CardCondition = None,
         can_pass: bool = False):
     """
     Common process of selecting discard cards.
@@ -81,6 +83,7 @@ def discard_select_process(
         can_less (bool): True is for that the number of discards can be less.
         from_pilename (PileName): This is where the card came from.
         next_step_callback (Callable, Optional): After step, call this.
+        card_condition (CardCondition, Optional): condition of discard cards.
         can_pass (bool): True is for that can discard nothing.
             When can_less is True, can_pass is meaningless.
 
@@ -101,5 +104,6 @@ def discard_select_process(
         game, source_step, choice_name, count,
         from_pilename, to_pilename=PileName.DISCARD,
         can_less=can_less, can_pass=can_pass,
-        next_step_callback=next_step_callback
+        next_step_callback=next_step_callback,
+        card_condition=card_condition
     )
