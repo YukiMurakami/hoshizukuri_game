@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ..steps.abstract_step import AbstractStep
     from .player import Player
 from .pile import Pile, PileType
+from .log import LogManager
 from .variable import Variable, VariableName
 from .trigger import Trigger
 from ..steps.phase_steps import (
@@ -39,6 +40,7 @@ class Game:
         stack (List[AbstractStep]): Steps that is going to be processed.
         choice (str): Now player's choice.
         start_deck (List[int]): The contents of start deck.
+        log_manager (LogManager): This is for simulation with shuffle it log.
     """
     def __init__(self):
         self.version = "1.0"
@@ -59,6 +61,7 @@ class Game:
         self.winner_id: int = -1
         self.triggers: List[Trigger] = []
         self.variables: Dict[VariableName, Variable] = {}
+        self.log_manager: LogManager = None
 
     def make_card(self, card_id: int):
         """
