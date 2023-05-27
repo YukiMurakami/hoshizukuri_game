@@ -12,6 +12,8 @@ import os
 import yaml
 from ..models.cost import Cost
 from ..models.pile import PileType
+import re
+import mojimoji
 
 
 class CardType(Enum):
@@ -67,6 +69,7 @@ class CardData:
                 name2iddic[name] = d["id"]
                 name2iddic[norm_name] = d["id"]
                 name2iddic[jpn_name] = d["id"]
+                name2iddic[mojimoji.zen_to_han(jpn_name)] = d["id"]
                 cardinfo[d["id"]]["type"] = [
                     CardType(n) for n in d["type"].split("-")]
                 cardinfo[d["id"]]["cost"] = Cost(d["cost"])
@@ -324,6 +327,40 @@ def get_count(
             count += sub_count(pile, card_id)
         return count
     return sub_count(pile_or_piles, card_id)
+
+
+def str2ids(card_str: str) -> List[int]:
+    """
+    Get card IDs list with string.
+
+    Args:
+        card_str (str): string which shows cards.
+
+    Returns:
+        List[int]: Card IDs list.
+    """
+    card_ids = []
+    div = [n.strip() for n in card_str.split(" and ")]
+    div2 = []
+    for d in div:
+        divdiv = [n.strip() for n in d.split(",")]
+        div2 += divdiv
+    for ele in div2:
+        if ele == "":
+            continue
+        match1 = re.match(r"^(\d+) (.*?)$", ele)
+        match3 = re.match(r"^(.*?)$", ele)
+        if match1 is not None:
+            count = int(match1.group(1))
+            card_str = match1.group(2)
+            card_id = get_card_id(card_str)
+            card_ids += [card_id] * count
+        elif match3 is not None:
+            count = 1
+            card_str = match3.group(1)
+            card_id = get_card_id(card_str)
+            card_ids += [card_id] * count
+    return card_ids
 
 
 def is_same_card_ids(a: List[int], b: List[int]):

@@ -14,6 +14,7 @@ from hoshizukuri_game.utils.card_util import (
     get_vp,
     get_starflake,
     get_japanese_name,
+    str2ids,
     CardType, CardColor
 )
 from hoshizukuri_game.models.game import Game
@@ -201,3 +202,9 @@ class TestCardUtil:
 
     def test_is_create_2(self):
         assert is_create(3)
+
+    def test_str2ids_1(self):
+        assert str2ids("星屑, 岩石,  , ") == [1, 2]
+
+    def test_str2ids_2(self):
+        assert str2ids("1 星屑, 2 岩石") == [1, 2, 2]
