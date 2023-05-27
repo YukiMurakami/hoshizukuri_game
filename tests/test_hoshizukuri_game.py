@@ -10,6 +10,7 @@ class TestHoshizukuriGame:
         random.seed(0)
         simulator = HoshizukuriGame()
         game = Game()
+        delattr(game, "log_manager")
         game.set_players([Player(0), Player(1)])
         game.set_supply([n for n in range(8, 17)])
         game.set_initial_step()
@@ -46,3 +47,33 @@ class TestHoshizukuriGame:
         assert result["steps"] == [
             "0:abstract"
         ]
+
+
+class TestSimulateSampleLogs():
+    def test_simulate_log_1(self):
+        simulator = HoshizukuriGame()
+        filename = "tests/test_log/test_1.txt"
+        result = simulator.simulate_with_log(filename, True)
+        assert result["message"] == "ok"
+        result = result["results"]
+        assert len(result) == 1
+        assert result[0]["game"].result[0]["point"] == 19
+        assert result[0]["candidates"] == []
+
+    def test_simulate_log_error_1(self):
+        simulator = HoshizukuriGame()
+        filename = "tests/test_log/error_1.txt"
+        result = simulator.simulate_with_log(filename, True)
+        assert result["message"] == (
+            "Invalid Log Exception - line 48: ハレー draws 星屑."
+            " (command=resolve_effect,player_id=1,depth=0)"
+        )
+
+    def test_simulate_log_error_2(self):
+        simulator = HoshizukuriGame()
+        filename = "tests/test_log/error_2.txt"
+        result = simulator.simulate_with_log(filename)
+        print(result)
+        assert result["message"] == (
+            "Logs are still there. (0:DRAW,player_id=1,card_ids=[4])"
+        )
