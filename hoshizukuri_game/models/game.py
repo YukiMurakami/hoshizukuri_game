@@ -119,9 +119,7 @@ class Game:
         )
         for n in reversed(range(len(self.players))):
             self.stack.append(DrawStep(n, 0, 4))
-        for n in reversed(range(len(self.players))):
             self.stack.append(ReshuffleStep(n, 0))
-        for n in reversed(range(len(self.players))):
             self.stack.append(PrepareFirstDeckStep(n))
 
     def _get_start_supply_count(self, card_id: int, player_num: int):

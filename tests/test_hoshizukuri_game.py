@@ -23,11 +23,11 @@ class TestHoshizukuriGame:
         )
         assert result["steps"] == [
             '0:preparefirstdeck:0',
-            '0:preparefirstdeck:1',
             '0:reshuffle:0:3-7,1-1,3-6,1-2,3-5,1-3,2-4',
-            '0:reshuffle:1:3-13,3-12,2-11,3-14,1-8,1-9,1-10',
             '0:pre-draw:0:4',
             '0:draw:0:3-7,1-1,3-6,1-2',
+            '0:preparefirstdeck:1',
+            '0:reshuffle:1:3-13,3-12,2-11,3-14,1-8,1-9,1-10',
             '0:pre-draw:1:4',
             '0:draw:1:3-13,3-12,2-11,3-14',
             '0:turnstart:1:0:normal:0',
