@@ -1,0 +1,381 @@
+Game GameId, local.
+Supply: 衛星, 惑星, 恒星, 隕石, ﾌﾞﾗｯｸﾎｰﾙ, 星座, 星雲, 核融合, 氷, 草原, 大地.
+エンケ starts with 3 星屑, 1 岩石, 3 衛星.
+エンケ shuffles their deck.
+エンケ draws 衛星, 岩石, 星屑, 衛星.
+ハレー starts with 3 星屑, 1 岩石, 3 衛星.
+ハレー shuffles their deck.
+ハレー draws 星屑, 衛星, 星屑, 星屑.
+Turn - エンケ.
+エンケ plays 岩石.
+エンケ resolves the effects of 岩石.
+エンケ draws 衛星.
+エンケ plays 星屑.
+エンケ resolves the effects of 星屑.
+エンケ draws 星屑.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 0 to 3.
+エンケ creates 草原.
+エンケ discards 岩石, 星屑, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー draws 衛星.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー draws 衛星.
+ハレー plays 衛星.
+ハレー resolves the effects of 衛星.
+ハレー changes the number of orbits from 0 to 3.
+ハレー creates 星雲.
+ハレー discards 星屑, 星屑, 衛星 from their playarea.
+Turn - エンケ.
+エンケ plays 星屑.
+エンケ resolves the effects of 星屑.
+エンケ draws 星屑.
+エンケ plays 星屑.
+エンケ resolves the effects of 星屑.
+エンケ shuffles their deck.
+エンケ draws 衛星.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 3 to 6.
+エンケ creates 星雲.
+エンケ discards 星屑, 星屑, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー draws 岩石.
+ハレー plays 岩石.
+ハレー resolves the effects of 岩石.
+ハレー shuffles their deck.
+ハレー draws 星屑.
+ハレー plays 星雲.
+ハレー resolves the effects of 星雲.
+ハレー draws 星屑.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー draws 衛星.
+ハレー plays 衛星.
+ハレー resolves the effects of 衛星.
+ハレー changes the number of orbits from 3 to 8.
+ハレー creates 核融合.
+ハレー discards 星屑, 岩石, 星雲, 星屑, 衛星 from their playarea.
+Turn - エンケ.
+エンケ plays 草原.
+エンケ resolves the effects of 草原.
+@エンケ gains 星雲 into their discard.
+エンケ draws 星屑.
+エンケ plays 星屑.
+エンケ resolves the effects of 星屑.
+エンケ draws 岩石.
+エンケ plays 岩石.
+エンケ resolves the effects of 岩石.
+エンケ shuffles their deck.
+エンケ draws 星屑.
+エンケ plays 星雲.
+エンケ resolves the effects of 星雲.
+エンケ draws 星屑.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 6 to 11.
+エンケ creates 核融合.
+エンケ discards 草原, 星屑, 岩石, 星雲, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー shuffles their deck.
+ハレー draws 岩石.
+ハレー plays 核融合.
+ハレー resolves the effects of 核融合.
+@ハレー trashes 衛星 from their hand.
+ハレー draws 星屑, 星雲.
+ハレー plays 星雲.
+ハレー resolves the effects of 星雲.
+ハレー draws 衛星.
+ハレー plays 衛星.
+ハレー resolves the effects of 衛星.
+ハレー changes the number of orbits from 8 to 12.
+ハレー creates 氷.
+ハレー discards 星屑, 核融合, 星雲, 衛星 from their playarea.
+Turn - エンケ.
+エンケ plays 核融合.
+エンケ resolves the effects of 核融合.
+@エンケ trashes 星屑 from their hand.
+エンケ draws 衛星, 星雲.
+エンケ plays 星雲.
+エンケ resolves the effects of 星雲.
+エンケ shuffles their deck.
+エンケ draws 草原.
+エンケ plays 草原.
+エンケ resolves the effects of 草原.
+@エンケ gains 星雲 into their discard.
+エンケ draws 岩石.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 11 to 15.
+エンケ creates 氷.
+エンケ discards 核融合, 星雲, 草原, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 岩石.
+ハレー resolves the effects of 岩石.
+ハレー draws 星屑.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー shuffles their deck.
+ハレー draws 核融合.
+ハレー plays 衛星.
+ハレー resolves the effects of 衛星.
+ハレー changes the number of orbits from 12 to 15.
+ハレー creates 草原.
+ハレー discards 岩石, 星屑, 衛星 from their playarea.
+Turn - エンケ.
+エンケ plays 岩石.
+エンケ resolves the effects of 岩石.
+エンケ draws 星雲.
+エンケ plays 星屑.
+エンケ resolves the effects of 星屑.
+エンケ draws 星屑.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 15 to 18.
+エンケ creates 草原.
+エンケ discards 岩石, 星屑, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 氷, 核融合, 草原.
+ハレー resolves the effects of 氷.
+ハレー resolves the effects of 核融合.
+@ハレー trashes 星屑 from their hand.
+ハレー resolves the effects of 草原.
+@ハレー gains 氷 into their discard.
+ハレー shuffles their deck.
+ハレー draws 星雲, 衛星, 星屑, 衛星.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー draws 星屑.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー draws 岩石.
+ハレー plays 衛星.
+ハレー resolves the effects of 衛星.
+ハレー changes the number of orbits from 15 to 18.
+ハレー creates 大地.
+ハレー discards 氷, 核融合, 草原, 星屑, 星屑, 衛星 from their playarea.
+Turn - エンケ.
+エンケ plays 氷, 星雲, 草原.
+エンケ resolves the effects of 氷.
+エンケ resolves the effects of 星雲.
+エンケ resolves the effects of 草原.
+@エンケ gains 氷 into their discard.
+エンケ shuffles their deck.
+エンケ draws 衛星, 氷, 衛星.
+エンケ plays 星屑.
+エンケ resolves the effects of 星屑.
+エンケ draws 衛星.
+エンケ plays 氷.
+エンケ resolves the effects of 氷.
+エンケ draws 星屑.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 18 to 20.
+エンケ creates 核融合.
+エンケ discards 氷, 星雲, 草原, 星屑, 氷, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 岩石.
+ハレー resolves the effects of 岩石.
+ハレー draws 氷.
+ハレー plays 氷, 大地, 星雲.
+ハレー resolves the effects of 氷.
+ハレー resolves the effects of 大地.
+@ハレー gains 惑星 into their discard.
+ハレー resolves the effects of 星雲.
+ハレー shuffles their deck.
+ハレー draws 星屑, 氷, 核融合.
+ハレー plays 衛星.
+ハレー resolves the effects of 衛星.
+ハレー changes the number of orbits from 18 to 20.
+ハレー creates 大地.
+ハレー discards 岩石, 氷, 大地, 星雲, 衛星 from their playarea.
+Turn - エンケ.
+エンケ plays 核融合.
+エンケ resolves the effects of 核融合.
+@エンケ trashes 衛星 from their hand.
+エンケ draws 草原, 星雲.
+エンケ plays 星屑.
+エンケ resolves the effects of 星屑.
+エンケ draws 岩石.
+エンケ plays 岩石.
+エンケ resolves the effects of 岩石.
+エンケ draws 星雲.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 20 to 24.
+エンケ creates 草原.
+エンケ discards 核融合, 星屑, 岩石, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 大地, 核融合, 氷.
+ハレー resolves the effects of 大地.
+@ハレー gains 惑星 into their discard.
+ハレー resolves the effects of 核融合.
+@ハレー trashes 星屑 from their hand.
+ハレー resolves the effects of 氷.
+ハレー draws 衛星, 草原, 惑星, 星屑.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー shuffles their deck.
+ハレー draws 岩石.
+ハレー plays 岩石.
+ハレー resolves the effects of 岩石.
+ハレー draws 大地.
+ハレー plays 草原, 大地.
+ハレー resolves the effects of 草原.
+@ハレー gains ﾌﾞﾗｯｸﾎｰﾙ into their discard.
+ハレー resolves the effects of 大地.
+@ハレー gains 惑星 into their discard.
+ハレー draws 惑星, 星雲.
+ハレー plays 惑星.
+ハレー resolves the effects of 惑星.
+ハレー changes the number of orbits from 20 to 24.
+ハレー creates 恒星.
+ハレー discards 大地, 核融合, 氷, 星屑, 岩石, 草原, 大地, 惑星 from their playarea.
+Turn - エンケ.
+エンケ plays 星雲, 星雲.
+エンケ resolves the effects of 星雲.
+エンケ resolves the effects of 星雲.
+エンケ shuffles their deck.
+エンケ draws 核融合, 氷.
+エンケ plays 草原, 核融合, 氷.
+エンケ resolves the effects of 草原.
+エンケ resolves the effects of 核融合.
+エンケ resolves the effects of 氷.
+エンケ draws 衛星, 星屑, 核融合.
+エンケ plays 核融合.
+エンケ resolves the effects of 核融合.
+@エンケ trashes 星屑 from their hand.
+エンケ draws 星雲, 衛星.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 24 to 27.
+エンケ creates 恒星.
+エンケ discards 星雲, 星雲, 草原, 核融合, 氷, 核融合, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 星雲.
+ハレー resolves the effects of 星雲.
+ハレー draws 氷.
+ハレー plays 氷.
+ハレー resolves the effects of 氷.
+ハレー draws 衛星.
+ハレー plays 恒星.
+ハレー resolves the effects of 恒星.
+ハレー changes the number of orbits from 24 to 26.
+ハレー creates ﾌﾞﾗｯｸﾎｰﾙ.
+ハレー discards 星雲, 氷, 恒星 from their playarea.
+Turn - ハレー.
+ハレー plays ﾌﾞﾗｯｸﾎｰﾙ.
+ハレー resolves the effects of ﾌﾞﾗｯｸﾎｰﾙ.
+@ハレー adds 衛星, 惑星, 衛星 to the play from their hand.
+ハレー resolves the effects of 衛星.
+ハレー resolves the effects of 惑星.
+ハレー resolves the effects of 衛星.
+ハレー shuffles their deck.
+ハレー draws 核融合, 大地, 氷, 岩石.
+ハレー plays 核融合, 大地, 氷.
+ハレー resolves the effects of 核融合.
+@ハレー trashes 岩石 from their hand.
+ハレー resolves the effects of 大地.
+@ハレー gains 惑星 into their discard.
+ハレー resolves the effects of 氷.
+ハレー draws 氷, 惑星, ﾌﾞﾗｯｸﾎｰﾙ, 恒星.
+ハレー plays 氷.
+ハレー resolves the effects of 氷.
+ハレー draws 草原.
+ハレー plays 恒星.
+ハレー resolves the effects of 恒星.
+ハレー changes the number of orbits from 26 to 28.
+ハレー creates 恒星.
+ハレー discards ﾌﾞﾗｯｸﾎｰﾙ, 衛星, 惑星, 衛星, 核融合, 大地, 氷, 氷, 恒星 from their playarea.
+Turn - エンケ.
+エンケ plays 星雲.
+エンケ resolves the effects of 星雲.
+エンケ draws 岩石.
+エンケ plays 岩石.
+エンケ resolves the effects of 岩石.
+エンケ draws 星屑.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 27 to 30.
+エンケ creates ﾌﾞﾗｯｸﾎｰﾙ.
+エンケ discards 星雲, 岩石, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays ﾌﾞﾗｯｸﾎｰﾙ.
+ハレー resolves the effects of ﾌﾞﾗｯｸﾎｰﾙ.
+@ハレー adds 惑星, 恒星 to the play from their hand.
+ハレー resolves the effects of 惑星.
+ハレー resolves the effects of 恒星.
+ハレー draws 大地, 惑星, 星雲.
+ハレー plays 草原, 大地.
+ハレー resolves the effects of 草原.
+@ハレー gains 衛星 into their discard.
+ハレー resolves the effects of 大地.
+@ハレー gains 惑星 into their discard.
+ハレー shuffles their deck.
+ハレー draws 星屑, 衛星.
+ハレー plays 星雲.
+ハレー resolves the effects of 星雲.
+ハレー draws 恒星.
+ハレー plays 星屑.
+ハレー resolves the effects of 星屑.
+ハレー draws 氷.
+ハレー plays 氷.
+ハレー resolves the effects of 氷.
+ハレー draws 大地.
+ハレー plays 恒星.
+ハレー resolves the effects of 恒星.
+ハレー changes the number of orbits from 28 to 33.
+ハレー creates 恒星.
+ハレー discards ﾌﾞﾗｯｸﾎｰﾙ, 惑星, 恒星, 草原, 大地, 星雲, 星屑, 氷, 恒星 from their playarea.
+Turn - エンケ.
+エンケ plays 星屑.
+エンケ resolves the effects of 星屑.
+エンケ draws 氷.
+エンケ plays ﾌﾞﾗｯｸﾎｰﾙ.
+エンケ resolves the effects of ﾌﾞﾗｯｸﾎｰﾙ.
+@エンケ adds 恒星 to the play from their hand.
+エンケ resolves the effects of 恒星.
+エンケ shuffles their deck.
+エンケ draws 草原, 星雲.
+エンケ plays 星雲, 草原, 氷.
+エンケ resolves the effects of 星雲.
+エンケ resolves the effects of 草原.
+@エンケ gains 衛星 into their discard.
+エンケ resolves the effects of 氷.
+エンケ draws 核融合, 星雲, 核融合.
+エンケ plays 核融合, 星雲, 核融合.
+エンケ resolves the effects of 核融合.
+エンケ resolves the effects of 星雲.
+エンケ resolves the effects of 核融合.
+エンケ draws 衛星, 氷, 星雲.
+エンケ plays 衛星.
+エンケ resolves the effects of 衛星.
+エンケ changes the number of orbits from 30 to 34.
+エンケ creates 恒星.
+エンケ discards 星屑, ﾌﾞﾗｯｸﾎｰﾙ, 恒星, 星雲, 草原, 氷, 核融合, 星雲, 核融合, 衛星 from their playarea.
+Turn - ハレー.
+ハレー plays 大地.
+ハレー resolves the effects of 大地.
+@ハレー gains 惑星 into their discard.
+ハレー draws 核融合.
+ハレー plays 核融合.
+ハレー resolves the effects of 核融合.
+ハレー changes the number of orbits from 33 to 35.
+エンケ changes the number of orbits from 34 to 35.
+ハレー discards 大地, 核融合 from their playarea.
+ハレー draws 惑星.
+
+Game over.
+The order is ハレー, エンケ.
+エンケ has 19 points.
+エンケ has 1 星屑, 3 衛星, 1 岩石, 1 ﾌﾞﾗｯｸﾎｰﾙ, 2 恒星, 3 星雲, 2 核融合, 2 氷, 3 草原.
+ハレー has 51 points.
+ハレー has 1 星屑, 3 衛星, 2 ﾌﾞﾗｯｸﾎｰﾙ, 6 惑星, 3 恒星, 1 星雲, 1 核融合, 2 氷, 1 草原, 2 大地.
