@@ -74,6 +74,7 @@ class HoshizukuriGame:
             InvalidLogException: Invalid log.
         """
         log_manager = LogManager()
+        log_manager.debug = debug
         log_manager.read_log(log_filename)
         players = []
         for i in range(len(log_manager.get_names())):

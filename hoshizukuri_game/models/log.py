@@ -307,6 +307,7 @@ class LogManager():
     LogManager model class.
     """
     def __init__(self):
+        self.debug = False
         self._names: List[str] = []
         self._supply_ids: List[int] = []
         self._logs: List[Log] = []
@@ -449,7 +450,8 @@ class LogManager():
         if len(self._logs) > 0:
             log = self._logs[0]
             del self._logs[0]
-            # print('\033[31m'+'%s' % log+'\033[0m')
+            if self.debug:
+                print('\033[31m'+'%s' % log+'\033[0m')
             return log
         return None
 
@@ -552,5 +554,6 @@ class LogManager():
         """
         if not self.check_nextlog(log_condition, offset=offset):
             return None
-        # print('\033[32m'+'%s' % self._logs[0]+'\033[0m')
+        if self.debug:
+            print('\033[32m'+'%s' % self._logs[0]+'\033[0m')
         return self._logs[offset]
