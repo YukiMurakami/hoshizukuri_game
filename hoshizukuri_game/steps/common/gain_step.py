@@ -57,6 +57,7 @@ class GainStep(CardMoveStep):
         pilename = self.from_pilename.value
         to_pilename = self.to_pilename.value
         gain_str = "%d" % self.card_ids[0]
+        gain_str = ""
         if len(self.uniq_ids) == 1:
             gain_str = "%d-%d" % (self.card_ids[0], self.uniq_ids[0])
         return "%d:gain:%s:%d:%s:%s" % (

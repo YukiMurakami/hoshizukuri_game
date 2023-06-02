@@ -21,6 +21,13 @@ class TestGainStep():
         step = GainStep(0, 1, 2, uniq_id=10, from_pilename=PileName.TRASH)
         assert str(step) == "1:gain:trash:0:2-10:discard"
 
+    def test_str_3(self):
+        game = self.get_game()
+        game.supply[2] = Pile(PileType.NUMBER, card_id_and_count=[2, 0])
+        step = GainStep(0, 0, 2)
+        step.process(game)
+        assert str(step) == "0:gain:supply:0::discard"
+
     def get_game(self):
         game = Game()
         game.set_players([Player(0), Player(1)])
