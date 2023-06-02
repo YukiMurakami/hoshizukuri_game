@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 from ..abstract_step import AbstractStep
 from ...models.card import Card
 from ...models.pile import PileName
+from ...models.log import LogCondition, Command, InvalidLogException
 import random
 
 
@@ -34,6 +35,13 @@ class ReshuffleStep(AbstractStep):
 
     def process(self, game: Game):
         if game.players[self.player_id].pile[PileName.DISCARD].count > 0:
+            if game.log_manager is not None:
+                log_condition = LogCondition(
+                    Command.SHUFFLE, self.player_id, depth=self.depth
+                )
+                log = game.log_manager.check_nextlog_and_pop(log_condition)
+                if log is None:
+                    raise InvalidLogException(game, log_condition)
             random.shuffle(
                 game.players[self.player_id].pile[PileName.DISCARD].card_list)
             self.deck_list = list(
