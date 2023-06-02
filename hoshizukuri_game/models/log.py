@@ -421,11 +421,23 @@ class LogManager():
             filename (str): filename of log.
         """
         lines = [n.strip() for n in open(filename).readlines()]
+        lines = self._preprocess(lines)
         self._names = self._get_names(lines)
         self._supply_ids = self._get_supply(lines)
         self._log_formatter.set_names(self._names)
         self._logs = self._log_formatter.format(lines)
         self._result = self._get_result(lines)
+
+    def _preprocess(self, lines: List[str]):
+        """
+        Fix invalid log with app bug.
+        """
+        fix_lines = []
+        for line in lines:
+            if "draws ." in line:
+                continue
+            fix_lines.append(line)
+        return fix_lines
 
     def pop(self):
         """

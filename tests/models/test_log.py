@@ -512,3 +512,15 @@ class TestLogManager():
         assert log_manager.check_result_log(result) == (
             "Not found result of log."
         )
+
+    def test_reprocess(self):
+        log_manager = LogManager()
+        lines = log_manager._preprocess([
+            "A draws 星屑.",
+            "A draws .",
+            "A draws 岩石."
+        ])
+        assert lines == [
+            "A draws 星屑.",
+            "A draws 岩石."
+        ]
