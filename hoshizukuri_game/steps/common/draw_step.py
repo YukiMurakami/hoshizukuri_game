@@ -9,6 +9,8 @@ from ..abstract_step import AbstractStep
 from .shuffle_step import ReshuffleStep
 from ...models.card import Card
 from ...models.pile import PileName
+from ...models.log import Command, InvalidLogException, LogCondition
+from ...utils.card_util import ids2cards
 
 
 class DrawStep(AbstractStep):
@@ -65,6 +67,19 @@ class _ActualDrawStep(AbstractStep):
     def process(self, game: Game):
         self.draw_list = list(game.players[
             self.player_id].pile[PileName.DECK].card_list[:self.count])
+        if game.log_manager is not None:
+            command = Command.DRAW
+            log_condition = LogCondition(
+                command=command, player_id=self.player_id,
+                depth=self.depth
+            )
+            log = game.log_manager.check_nextlog_and_pop(log_condition)
+            if log is None:
+                raise InvalidLogException(game, log_condition)
+            self.draw_list = ids2cards(
+                game.players[self.player_id].pile[PileName.DECK],
+                log.card_ids, game
+            )
         game.move_card(
             game.players[self.player_id].pile[PileName.DECK],
             game.players[self.player_id].pile[PileName.HAND],

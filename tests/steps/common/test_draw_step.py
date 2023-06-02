@@ -1,5 +1,6 @@
 import random
 from hoshizukuri_game.models.card import Card
+from hoshizukuri_game.models.log import InvalidLogException
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
 from hoshizukuri_game.models.player import Player
 from hoshizukuri_game.steps.common.draw_step import (
@@ -8,6 +9,7 @@ from hoshizukuri_game.steps.common.draw_step import (
 )
 from hoshizukuri_game.steps.common.shuffle_step import ReshuffleStep
 from hoshizukuri_game.models.game import Game
+import pytest
 
 
 class TestDrawStep():
@@ -82,3 +84,37 @@ class TestActualDrawStep():
         assert deck.card_list[0].uniq_id == 3
         assert hand.card_list[1].uniq_id == 2
         assert next_steps == []
+
+    def test_process_log_1(self, make_log_manager):
+        step = _ActualDrawStep(0, 0, 2)
+        game = Game()
+        game.log_manager = make_log_manager(
+            "A draws 星屑, 惑星."
+        )
+        game.set_players([Player(0)])
+        game.players[0].pile[PileName.DECK] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(4, 3)
+            ]
+        )
+        deck = game.players[0].pile[PileName.DECK]
+        hand = game.players[0].pile[PileName.HAND]
+        next_steps = step.process(game)
+        assert str(deck) == "[1-2]"
+        assert str(hand) == "[1-1,4-3]"
+        assert next_steps == []
+
+    def test_process_log_error(self, make_log_manager):
+        step = _ActualDrawStep(0, 0, 2)
+        game = Game()
+        game.log_manager = make_log_manager(
+            "A discards 星屑 from their hand."
+        )
+        game.set_players([Player(0)])
+        game.players[0].pile[PileName.DECK] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(4, 3)
+            ]
+        )
+        with pytest.raises(InvalidLogException):
+            step.process(game)
