@@ -77,3 +77,12 @@ class TestSimulateSampleLogs():
         assert result["message"] == (
             "Logs are still there. (0:DRAW,player_id=1,card_ids=[4])"
         )
+
+    def test_simulate_log_error_3(self):
+        simulator = HoshizukuriGame()
+        filename = "tests/test_log/error_3.txt"
+        result = simulator.simulate_with_log(filename)
+        print(result)
+        assert result["message"] == (
+            "Stop with no choice in 0:playcardselect:0 step."
+        )
