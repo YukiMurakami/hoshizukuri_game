@@ -25,8 +25,12 @@ class Command(Enum):
     CREATE = "<PLAYER> creates <CARD>."
     DISCARD_FROM_PLAYAREA = "<PLAYER> discards <CARDS> from their playarea."
     DISCARD_FROM_HAND = "<PLAYER> discards <CARDS> from their hand."
+    DISCARD_FROM_LOOK = "<PLAYER> discards <CARDS> from their look."
     LOOK_FROM_DECK = "<PLAYER> looks <CARDS> from their deck."
     REVEAL_FROM_DECK = "<PLAYER> reveals <CARDS> from their deck."
+    PUT_HAND_FROM_LOOK = (
+        "<PLAYER> puts <CARDS> into their hand from their look."
+    )
     ADD_PLAY_FROM_REVEAL = (
         "<PLAYER> adds <CARDS> to the play from their reveal."
     )
@@ -36,6 +40,7 @@ class Command(Enum):
     TRASH_FROM_HAND = "<PLAYER> trashes <CARDS> from their hand."
     GAIN_INTO_HAND = "<PLAYER> gains <CARD> into their hand."
     GAIN_INTO_DISCARD = "<PLAYER> gains <CARD> into their discard."
+    TRASH_FROM_PLAYAREA = "<PLAYER> trashes <CARDS> from their playarea."
 
 
 class InvalidLogException(Exception):
