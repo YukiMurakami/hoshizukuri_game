@@ -1,5 +1,8 @@
 from typing import List
 from hoshizukuri_game.models.card import Card
+from hoshizukuri_game.models.log import (
+    Command, InvalidLogException, LogCondition
+)
 from hoshizukuri_game.utils.card_util import CardType
 from hoshizukuri_game.models.card_condition import CardCondition
 from hoshizukuri_game.steps.common.play_step import PlayStep
@@ -219,6 +222,44 @@ class TestCardMoveStep:
         assert str(game.players[0].pile[PileName.HAND]) == "[]"
         assert game.supply[3].count == 0
 
+    def get_log_condition(self):
+        return LogCondition(
+            Command.DISCARD_FROM_HAND, player_id=0,
+            depth=0, card_ids=[1]
+        )
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        game = get_game(
+            [], [], [Card(1, 1), Card(1, 2)], [])
+        game.log_manager = make_log_manager(
+            "A discards 星屑 from their hand."
+        )
+        step = CardMoveStep(
+            player_id=0, depth=0,
+            from_pilename=PileName.HAND,
+            to_pilename=PileName.DISCARD,
+            card_ids=[1]
+        )
+        step._get_log_condition = self.get_log_condition
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+
+    def test_process_log_error(self, make_log_manager):
+        game = get_game(
+            [], [], [Card(1, 1), Card(1, 2)], [])
+        game.log_manager = make_log_manager(
+            "A draws 星屑."
+        )
+        step = CardMoveStep(
+            player_id=0, depth=0,
+            from_pilename=PileName.HAND,
+            to_pilename=PileName.DISCARD,
+            card_ids=[1]
+        )
+        step._get_log_condition = self.get_log_condition
+        with pytest.raises(InvalidLogException):
+            step.process(game)
+
 
 class TestActualCardMoveFromDeckStep:
     def get_from_deck_step_string(self, step):
@@ -237,7 +278,8 @@ class TestActualCardMoveFromDeckStep:
             to_pilename=PileName.REVEAL,
             next_step_callback=self.callback,
             get_from_deck_step_string=self.get_from_deck_step_string,
-            after_process_callback=self.after_process_callback
+            after_process_callback=self.after_process_callback,
+            get_log_condition=self.get_log_condition
         )
         game = get_game(
             [Card(1, 1), Card(1, 2), Card(4, 3)], [Card(4, 4)],
@@ -247,6 +289,49 @@ class TestActualCardMoveFromDeckStep:
         assert get_step_classes(next_steps) == [AbstractStep]
         assert str(game.players[0].pile[PileName.DECK]) == "[4-3]"
         assert str(game.players[0].pile[PileName.REVEAL]) == "[1-1,1-2]"
+
+    def get_log_condition(self):
+        return LogCondition(
+            Command.REVEAL_FROM_DECK, player_id=0,
+            depth=0
+        )
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        game = get_game(
+            [Card(1, 3), Card(2, 4)], [], [Card(1, 1), Card(1, 2)], [])
+        game.log_manager = make_log_manager(
+            "A reveals 星屑 from their deck."
+        )
+        step = _ActualCardMoveFromDeckStep(
+            player_id=0, depth=0, count=1,
+            to_pilename=PileName.REVEAL,
+            next_step_callback=self.callback,
+            get_from_deck_step_string=self.get_from_deck_step_string,
+            after_process_callback=self.after_process_callback,
+            get_log_condition=self.get_log_condition
+        )
+        step._get_log_condition = self.get_log_condition
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [AbstractStep]
+        assert str(game.players[0].pile[PileName.REVEAL]) == "[1-3]"
+
+    def test_process_log_error(self, make_log_manager):
+        game = get_game(
+            [Card(1, 3), Card(2, 4)], [], [Card(1, 1), Card(1, 2)], [])
+        game.log_manager = make_log_manager(
+            "A draws 星屑."
+        )
+        step = _ActualCardMoveFromDeckStep(
+            player_id=0, depth=0, count=1,
+            to_pilename=PileName.REVEAL,
+            next_step_callback=self.callback,
+            get_from_deck_step_string=self.get_from_deck_step_string,
+            after_process_callback=self.after_process_callback,
+            get_log_condition=self.get_log_condition
+        )
+        step._get_log_condition = self.get_log_condition
+        with pytest.raises(InvalidLogException):
+            step.process(game)
 
 
 class TestSelectProcess():
@@ -266,13 +351,16 @@ class TestSelectProcess():
             next_step_callback=None, previous_step_callback=None,
             expected_next_steps=None, expected_candidates=None,
             expected_card_ids=None, can_pass=None,
-            from_pilename=PileName.HAND, to_pilename=PileName.DISCARD):
+            from_pilename=PileName.HAND, to_pilename=PileName.DISCARD,
+            make_log_manager=None):
         game = Game()
         game.set_players([Player(0), Player(1)])
         game.set_supply([])
         game.players[player_id].pile[from_pilename] = Pile(
             PileType.LIST, card_list=card_list
         )
+        if make_log_manager is not None:
+            game.log_manager = make_log_manager(log)
         if can_pass is None:
             can_pass = can_less
         game.choice = choice
@@ -280,11 +368,15 @@ class TestSelectProcess():
         source_step.player_id = player_id
         next_steps = select_process(
             self.create_step, game, source_step,
-            "play", count, from_pilename=from_pilename,
+            "discard", count, from_pilename=from_pilename,
             to_pilename=to_pilename,
             can_less=can_less, can_pass=can_pass, card_condition=condition,
             next_step_callback=next_step_callback,
-            previous_step_callback=previous_step_callback
+            previous_step_callback=previous_step_callback,
+            log_condition=LogCondition(
+                Command.DISCARD_FROM_HAND, player_id=source_step.player_id,
+                depth=source_step.depth
+            ),
         )
         if expected_next_steps is not None:
             assert get_step_classes(next_steps) == expected_next_steps
@@ -298,19 +390,19 @@ class TestSelectProcess():
         self.check(
             get_step_classes, 0, [Card(1, 1), Card(4, 2)],
             expected_next_steps=[AbstractStep],
-            expected_candidates=["0:play:1#0", "0:play:4#0"])
+            expected_candidates=["0:discard:1#0", "0:discard:4#0"])
 
     def test_select_process_2(self, get_step_classes):
         self.check(
             get_step_classes, 0, [Card(1, 1), Card(4, 2)],
-            choice="0:play:4",
+            choice="0:discard:4",
             expected_next_steps=[PlayStep],
             expected_card_ids=[4])
 
     def test_select_process_3(self, get_step_classes):
         self.check(
             get_step_classes, 0, [Card(1, 1), Card(4, 2)],
-            choice="0:play:0",
+            choice="0:discard:0",
             expected_next_steps=[], can_less=True)
 
     def test_select_process_4(self, get_step_classes):
@@ -333,7 +425,7 @@ class TestSelectProcess():
             can_less=True,
             expected_next_steps=[AbstractStep],
             expected_candidates=[
-                "0:play:1#0", "0:play:4#0", "0:play:0#0"])
+                "0:discard:1#0", "0:discard:4#0", "0:discard:0#0"])
 
     def test_select_process_7(self, get_step_classes):
         self.check(
@@ -342,7 +434,7 @@ class TestSelectProcess():
             condition=CardCondition(type=CardType.STAR),
             expected_next_steps=[AbstractStep],
             expected_candidates=[
-                "0:play:4#0", "0:play:0#0"])
+                "0:discard:4#0", "0:discard:0#0"])
 
     def test_select_process_8(self, get_step_classes):
         with pytest.raises(Exception):
@@ -357,7 +449,7 @@ class TestSelectProcess():
             choice="",
             from_pilename=PileName.SUPPLY, count=1,
             expected_candidates=[
-                "0:play:3#0", "0:play:4#0", "0:play:5#0"
+                "0:discard:3#0", "0:discard:4#0", "0:discard:5#0"
             ],
             expected_next_steps=[AbstractStep]
         )
@@ -386,7 +478,7 @@ class TestSelectProcess():
             [Card(1, 1), Card(4, 2)],
             to_pilename=PileName.DECK,
             expected_next_steps=[AbstractStep], count=2,
-            expected_candidates=["0:play:1,4#0", "0:play:4,1#0"])
+            expected_candidates=["0:discard:1,4#0", "0:discard:4,1#0"])
 
     def test_select_process_30(
             self, get_step_classes):
@@ -397,7 +489,7 @@ class TestSelectProcess():
                 from_pilename=PileName.DECK,
                 to_pilename=PileName.DISCARD,
                 expected_next_steps=[AbstractStep], count=2,
-                expected_candidates=["0:play:1,4#0", "0:play:4,1#0"])
+                expected_candidates=["0:discard:1,4#0", "0:discard:4,1#0"])
 
     def test_select_process_31(
             self, get_step_classes):
@@ -406,4 +498,58 @@ class TestSelectProcess():
             [Card(1, 1), Card(4, 2)],
             expected_next_steps=[AbstractStep], count=2,
             can_pass=True,
-            expected_candidates=["0:play:1,4#0", "0:play:#0"])
+            expected_candidates=["0:discard:1,4#0", "0:discard:#0"])
+
+    def test_select_process_log_1(self, get_step_classes, make_log_manager):
+        self.check(
+            get_step_classes, 0, [Card(1, 1), Card(4, 2)],
+            log="A discards 惑星 from their hand.",
+            expected_next_steps=[PlayStep],
+            expected_card_ids=[4],
+            make_log_manager=make_log_manager)
+
+    def test_select_process_log_2(self, get_step_classes, make_log_manager):
+        self.check(
+            get_step_classes, 0, [Card(1, 1), Card(4, 2)],
+            log="", count=1,
+            expected_next_steps=[AbstractStep],
+            expected_candidates=["0:discard:1#0", "0:discard:4#0"],
+            make_log_manager=make_log_manager)
+
+    def test_select_process_log_3(self, get_step_classes, make_log_manager):
+        with pytest.raises(InvalidLogException):
+            self.check(
+                get_step_classes, 0, [Card(1, 1), Card(4, 2)],
+                log="A draws 星屑.", count=1,
+                expected_next_steps=[AbstractStep],
+                expected_candidates=["0:discard:1#0", "0:discard:4#0"],
+                make_log_manager=make_log_manager)
+
+    def test_select_process_log_4(self, get_step_classes, make_log_manager):
+        self.check(
+            get_step_classes, 0, [Card(1, 1), Card(4, 2)],
+            log="A draws 星屑.", count=1, can_less=True,
+            expected_next_steps=[],
+            make_log_manager=make_log_manager)
+
+    def test_select_process_log_5(self, get_step_classes, make_log_manager):
+        self.check(
+            get_step_classes, 0, [Card(1, 1), Card(4, 2)],
+            log="A draws 星屑.", count=2, can_less=True,
+            expected_next_steps=[],
+            make_log_manager=make_log_manager)
+
+    def test_select_process_log_6(self, get_step_classes, make_log_manager):
+        self.check(
+            get_step_classes, 0, [Card(1, 1), Card(4, 2)],
+            log="A discards 岩石 from their hand.", count=1, can_less=True,
+            expected_next_steps=[],
+            make_log_manager=make_log_manager)
+
+    def test_select_process_log_7(self, get_step_classes, make_log_manager):
+        with pytest.raises(InvalidLogException):
+            self.check(
+                get_step_classes, 0, [Card(1, 1), Card(4, 2)],
+                log="A discards 岩石 from their hand.", count=1,
+                expected_next_steps=[],
+                make_log_manager=make_log_manager)

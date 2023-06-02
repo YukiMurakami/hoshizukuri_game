@@ -9,7 +9,8 @@ from ..abstract_step import AbstractStep
 from ...models.pile import PileName, PileType
 from ...models.card import Card
 from ...models.card_condition import CardCondition, get_match_card_ids
-from ...utils.card_util import ids2uniq_ids
+from ...models.log import InvalidLogException, LogCondition
+from ...utils.card_util import ids2cards, ids2uniq_ids
 from ...utils.other_util import make_combination, make_permutation
 from ...utils.choice_util import cparsell, is_included_candidates
 from .shuffle_step import ReshuffleStep
@@ -94,6 +95,9 @@ class CardMoveStep(AbstractStep):
     def _get_from_deck_step_string(self, step):
         return "from_deck_step"
 
+    def _get_log_condition(self):
+        return None
+
     def __str__(self):
         return self._get_step_string()
 
@@ -113,13 +117,15 @@ class CardMoveStep(AbstractStep):
                         self.to_pilename,
                         self.next_step_callback,
                         self._get_from_deck_step_string,
-                        self._after_process_callback),
+                        self._after_process_callback,
+                        self._get_log_condition),
                     ReshuffleStep(self.player_id, self.depth)]
             return [_ActualCardMoveFromDeckStep(
                 self.player_id, self.depth, self.count, self.to_pilename,
                 self.next_step_callback,
                 self._get_from_deck_step_string,
-                self._after_process_callback)]
+                self._after_process_callback,
+                self._get_log_condition)]
         from_pile = get_pile(
             self.from_pilename, game, self.player_id)
         to_pile = get_pile(
@@ -147,6 +153,11 @@ class CardMoveStep(AbstractStep):
                 to_pile, card_id=self.card_ids[0]
             )
             self._after_process_callback(self.card_ids, self.uniq_ids, game)
+        log_condition = self._get_log_condition()
+        if game.log_manager is not None and log_condition is not None:
+            log = game.log_manager.check_nextlog_and_pop(log_condition)
+            if log is None:
+                raise InvalidLogException(game, log_condition)
         next_steps = self.next_step_callback(
             self.card_ids, self.uniq_ids, game)
         return next_steps
@@ -156,7 +167,7 @@ class _ActualCardMoveFromDeckStep(AbstractStep):
     def __init__(
             self, player_id, depth, count, to_pilename,
             next_step_callback, get_from_deck_step_string,
-            after_process_callback):
+            after_process_callback, get_log_condition):
         super().__init__()
         self.player_id = player_id
         self.depth = depth
@@ -166,6 +177,7 @@ class _ActualCardMoveFromDeckStep(AbstractStep):
         self.get_from_deck_step_string = get_from_deck_step_string
         self.card_list: List[Card] = []
         self.after_process_callback = after_process_callback
+        self.get_log_condition = get_log_condition
 
     def __str__(self):
         return self.get_from_deck_step_string(self)
@@ -173,6 +185,15 @@ class _ActualCardMoveFromDeckStep(AbstractStep):
     def process(self, game: Game):
         self.card_list = list(game.players[
             self.player_id].pile[PileName.DECK].card_list[:self.count])
+        log_condition = self.get_log_condition()
+        if game.log_manager is not None and log_condition is not None:
+            log = game.log_manager.check_nextlog_and_pop(log_condition)
+            if log is None:
+                raise InvalidLogException(game, log_condition)
+            self.card_list = ids2cards(
+                game.players[self.player_id].pile[PileName.DECK],
+                log.card_ids, game
+            )
         card_ids = [n.id for n in self.card_list]
         uniq_ids = [n.uniq_id for n in self.card_list]
         to_pile = get_pile(
@@ -196,6 +217,7 @@ def select_process(
         can_less: bool = False,
         can_pass: bool = False,
         card_condition: CardCondition = None,
+        log_condition: LogCondition = None,
         next_step_callback: Callable[
             [List[int], List[int], Game], List[AbstractStep]] = None,
         previous_step_callback: Callable[
@@ -219,6 +241,7 @@ def select_process(
         can_pass (bool, Optional): True is for that can move nothing.
             When can_less is True, can_pass is meaningless.
         card_condition (CardCondition): can move cards satisfy this.
+        log_condition (LogCondition, Optional): the condition of moving log.
         next_step_callback (Callable, Optional): After step, call this.
         previous_step_callback (Callable, Optional): Before step, call this.
     Returns:
@@ -235,6 +258,24 @@ def select_process(
     if select_player_id is None:
         select_player_id = source_step.player_id
     from_pile = get_pile(from_pilename, game, source_step.player_id)
+
+    def _log2choice():
+        if not game.log_manager.has_logs():
+            return game.choice
+        log = game.log_manager.get_nextlog(log_condition)
+        if log is not None:
+            card_ids = log.card_ids
+            if log.card_ids is None:
+                card_ids = [log.card_id]
+            return "%d:%s:%s" % (
+                select_player_id, choice_name, ",".join([
+                    str(a) for a in card_ids])
+            )
+        if can_less is False and can_pass is False:
+            raise InvalidLogException(game, log_condition)
+        if count == 1:
+            return "%d:%s:0" % (select_player_id, choice_name)
+        return "%d:%s:" % (select_player_id, choice_name)
 
     def _create_candidates():
         card_list = []
@@ -299,6 +340,15 @@ def select_process(
                 uniq_ids=uniq_ids,
             )
         ] + previous_step_callback(card_ids, uniq_ids, game)
+    if game.log_manager is not None:
+        game.choice = _log2choice()
+        if game.choice != "" and game.choice not in candidates:
+            if can_less:
+                game.choice = ""
+                return next_step_callback(
+                    [], [], game) + previous_step_callback([], [], game)
+            else:
+                raise InvalidLogException(game, log_condition)
     if game.choice == "" or not is_included_candidates(
             game.choice, candidates):
         source_step.candidates = candidates
