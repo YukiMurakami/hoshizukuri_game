@@ -103,7 +103,9 @@ class HoshizukuriGame:
                 if len(next_steps) > 0:
                     game.stack += next_steps
                 candidates = step.get_candidates(game)
-                assert len(candidates) <= 0
+                if len(candidates) > 0:
+                    raise Exception(
+                        "Stop with no choice in %s step." % str(last_step))
         except Exception as e:
             if debug:
                 print(e)
