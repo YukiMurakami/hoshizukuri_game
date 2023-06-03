@@ -44,3 +44,12 @@ class TestAbstractStep:
         step = AbstractStep()
         target_activate = TargetActivate(ActivatePlaysetEnd(0), 0)
         assert step.can_play_trigger(game, target_activate)
+
+    def test_get_trigger_name(self):
+        step = AbstractStep()
+        assert step.get_trigger_name() == ""
+
+    def test_get_trigger_log_condition(self):
+        game = Game()
+        step = AbstractStep()
+        assert step.get_trigger_log_condition(game) is None

@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ..models.game import Game
 import uuid
 from ..models.activate import TargetActivate
+from ..models.log import LogCondition
 
 
 class AbstractStep:
@@ -101,3 +102,25 @@ class AbstractStep:
                 Default is True.
         """
         return True
+
+    def get_trigger_name(self):
+        """
+        Get trigger name.
+        This is used in TriggerSelectStep.
+
+        Returns:
+            str: Trigger name.
+        """
+        return ""
+
+    def get_trigger_log_condition(self, game: Game) -> LogCondition:
+        """
+        Get LogCondition to call trigger step.
+
+        Args:
+            game (Game): now game
+
+        Returns:
+            LogCondition: log condition for calling this trigger step.
+        """
+        return None
