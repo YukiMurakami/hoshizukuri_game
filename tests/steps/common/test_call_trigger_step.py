@@ -16,6 +16,8 @@ from hoshizukuri_game.models.limit import (
 )
 from hoshizukuri_game.steps.base.daichi_step import _DaichiTriggerStep
 from hoshizukuri_game.utils.card_util import get_card_id
+from hoshizukuri_game.models.log import InvalidLogException
+import pytest
 
 
 class TestCallTriggerStep:
@@ -191,3 +193,53 @@ class TestTriggerSelectStep:
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [_DaichiTriggerStep]
         assert next_steps[0].get_candidates(game) == []
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        triggers = self.get_triggers()
+        source_step = AbstractStep()
+        step = _TriggerSelectStep(0, 0, triggers, source_step)
+        game = Game()
+        game.log_manager = make_log_manager(
+            "A trashes 大地 from their playarea."
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [_DaichiTriggerStep]
+        assert next_steps[0].get_candidates(game) == []
+
+    def test_process_log_2(self, get_step_classes, make_log_manager):
+        triggers = self.get_triggers()
+        source_step = AbstractStep()
+        step = _TriggerSelectStep(0, 0, triggers, source_step)
+        game = Game()
+        game.log_manager = make_log_manager("")
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [_TriggerSelectStep]
+        assert next_steps[0].get_candidates(game) == [
+            "0:triggerselect:daichi:%d-0#0" % get_card_id("daichi"),
+            "0:triggerselect:daichi:%d-1#0" % get_card_id("daichi"),
+            "0:triggerselect:pass#0"
+        ]
+
+    def test_process_log_3(self, get_step_classes, make_log_manager):
+        triggers = self.get_triggers()
+        source_step = AbstractStep()
+        step = _TriggerSelectStep(0, 0, triggers, source_step)
+        game = Game()
+        game.log_manager = make_log_manager(
+            "A draws 星屑."
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+
+    def test_process_log_4(self, get_step_classes, make_log_manager):
+        triggers = self.get_triggers()
+        triggers[0].can_pass = False
+        triggers[1].can_pass = False
+        source_step = AbstractStep()
+        step = _TriggerSelectStep(0, 0, triggers, source_step)
+        game = Game()
+        game.log_manager = make_log_manager(
+            "A draws 星屑."
+        )
+        with pytest.raises(InvalidLogException):
+            step.process(game)

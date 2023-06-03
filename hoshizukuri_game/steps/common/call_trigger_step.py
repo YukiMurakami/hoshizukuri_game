@@ -21,6 +21,7 @@ from ...models.trigger import (
 from ...models.variable import (
     set_variable, VariableName
 )
+from ...models.log import InvalidLogException
 from ...utils.choice_util import cparses
 
 
@@ -128,6 +129,8 @@ class _TriggerSelectStep(AbstractStep):
             if cannot_pass_count == 1 and len(self.candidates) == 1:
                 # auto select trigger
                 game.choice = self.candidates[0]
+            elif game.log_manager is not None:
+                game.choice = self._log2choice(game, all_can_pass)
         if game.choice == "":
             return [self]
         else:
@@ -145,3 +148,17 @@ class _TriggerSelectStep(AbstractStep):
         assert index is not None
         _process_triggers(game, self.triggers[index], self.source_step)
         return [self.triggers[index].step]
+
+    def _log2choice(self, game: Game, can_pass: bool):
+        if not game.log_manager.has_logs():
+            return game.choice
+        for trigger in self.triggers:
+            log_condition = trigger.step.get_trigger_log_condition(game)
+            log = game.log_manager.get_nextlog(log_condition)
+            if log is not None:
+                return "%d:triggerselect:%s" % (
+                    self.player_id, trigger.step.get_trigger_name()
+                )
+        if can_pass is False:
+            raise InvalidLogException(game)
+        return "%d:triggerselect:pass" % self.player_id
