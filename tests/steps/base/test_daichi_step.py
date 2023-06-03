@@ -1,3 +1,4 @@
+from hoshizukuri_game.models.log import Command
 from hoshizukuri_game.steps.base.daichi_step import (
     DaichiStep, _DaichiTriggerStep
 )
@@ -72,3 +73,9 @@ class TestDaichiTriggerStep():
         step = _DaichiTriggerStep(0, 0, 0)
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
+
+    def test_get_trigger_log_condition(self):
+        game = Game()
+        step = _DaichiTriggerStep(0, 0, 0)
+        log_condition = step.get_trigger_log_condition(game)
+        assert log_condition.command == Command.TRASH_FROM_PLAYAREA

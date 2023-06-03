@@ -9,6 +9,7 @@ from ...models.pile import PileName
 from ...models.trigger import Trigger
 from ...models.activate import ActivatePlaysetEnd
 from ...models.limit import LimitTriggerActivate
+from ...models.log import Command, LogCondition
 from ..abstract_step import AbstractStep
 from ..common.gain_step import GainStep
 from ..common.trash_step import TrashStep
@@ -81,4 +82,10 @@ class _DaichiTriggerStep(AbstractStep):
     def get_trigger_name(self):
         return "daichi:%d-%d" % (
             self.card_id, self.uniq_id
+        )
+
+    def get_trigger_log_condition(self, game) -> LogCondition:
+        return LogCondition(
+            Command.TRASH_FROM_PLAYAREA, self.player_id, self.depth,
+            card_ids=[get_card_id("daichi")]
         )
