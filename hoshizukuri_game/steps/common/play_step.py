@@ -10,6 +10,7 @@ from .card_move_step import CardMoveStep, select_process
 from ..abstract_step import AbstractStep
 from ...utils.kingdom_step_util import get_kingdom_steps
 from ...models.card_condition import CardCondition
+from ...models.log import Command, InvalidLogException, LogCondition
 
 
 class PlayStep(CardMoveStep):
@@ -23,6 +24,7 @@ class PlayStep(CardMoveStep):
         uniq_ids (List[int], Optional): Play card unique IDS.
         from_pilename (PileName, Optional): Play cards from this.
         process_effect (bool, Optional): Default is True.
+        add (bool, Optional): Default is False.
         orbit_index (int, Optional): Added card index.
     """
     def __init__(
@@ -30,6 +32,7 @@ class PlayStep(CardMoveStep):
             uniq_ids: List[int] = [],
             from_pilename: PileName = PileName.HAND,
             process_effect: bool = True,
+            add: bool = False,
             orbit_index: int = None):
         super().__init__(
             player_id, depth, from_pilename=from_pilename,
@@ -39,6 +42,7 @@ class PlayStep(CardMoveStep):
         )
         self.process_effect = process_effect
         self.orbit_index = orbit_index
+        self.add = add
 
     def _get_step_string(self):
         pilename = self.from_pilename.value
@@ -53,6 +57,26 @@ class PlayStep(CardMoveStep):
                     n]) for n in range(len(self.uniq_ids))]
             ),
             orbit_index
+        )
+
+    def _get_log_condition(self):
+        if self.add:
+            if self.from_pilename == PileName.REVEAL:
+                return LogCondition(
+                    command=Command.ADD_PLAY_FROM_REVEAL,
+                    player_id=self.player_id, depth=self.depth,
+                    card_ids=self.card_ids
+                )
+            if self.from_pilename == PileName.HAND:
+                return LogCondition(
+                    command=Command.ADD_PLAY_FROM_HAND,
+                    player_id=self.player_id, depth=self.depth,
+                    card_ids=self.card_ids
+                )
+        return LogCondition(
+            command=Command.PLAY, player_id=self.player_id,
+            depth=self.depth,
+            card_ids=self.card_ids
         )
 
     def process(self, game: Game):
@@ -74,9 +98,34 @@ class PlayStep(CardMoveStep):
             )
             steps += [
                 PlayEndStep(self.player_id, self.depth, card_id, uniq_id),
-                step
+                step,
+                _ProcessResolveLogStep(self.player_id, self.depth, card_id)
             ]
         return steps
+
+
+class _ProcessResolveLogStep(AbstractStep):
+    def __init__(self, player_id: int, depth: int, card_id: int):
+        super().__init__()
+        self.player_id = player_id
+        self.depth = depth
+        self.card_id = card_id
+
+    def __str__(self):
+        return "%d:processresolvelog:%d:%d" % (
+            self.depth, self.player_id, self.card_id
+        )
+
+    def process(self, game: Game):
+        if game.log_manager is not None:
+            log_condition = LogCondition(
+                Command.RESOLVE_EFFECT, self.player_id,
+                self.depth, card_ids=[self.card_id]
+            )
+            log = game.log_manager.check_nextlog_and_pop(log_condition)
+            if log is None:
+                raise InvalidLogException(game, log_condition)
+        return []
 
 
 class PlayEndStep(AbstractStep):
@@ -143,13 +192,20 @@ def play_add_select_process(
             uniq_ids=uniq_ids,
             from_pilename=from_pilename,
             process_effect=False,
+            add=True,
             orbit_index=orbit_index
         )
+    command = Command.ADD_PLAY_FROM_HAND
+    log_condition = LogCondition(
+        command=command, player_id=source_step.player_id,
+        depth=source_step.depth
+    )
     return select_process(
         create_step,
         game, source_step, choice_name, count,
         from_pilename, to_pilename=PileName.FIELD,
         can_less=can_less, can_pass=can_pass,
         card_condition=card_condition,
+        log_condition=log_condition,
         next_step_callback=next_step_callback
     )

@@ -54,6 +54,7 @@ class SuishoStep(AbstractStep):
                 uniq_ids=uniq_ids,
                 from_pilename=PileName.REVEAL,
                 process_effect=False,
+                add=True,
                 orbit_index=orbit_index
             )
         ]
