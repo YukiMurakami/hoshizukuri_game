@@ -20,11 +20,11 @@ class TestPutinHandStep():
         step.process(game)
         assert str(step) == "0:putinhand:reveal:0:1-1,1-2"
 
-    def get_game(self):
+    def get_game(self, pilename=PileName.REVEAL):
         game = Game()
         game.set_players([Player(0), Player(1)])
         game.set_supply([])
-        game.players[0].pile[PileName.REVEAL] = Pile(
+        game.players[0].pile[pilename] = Pile(
             PileType.LIST, card_list=[
                 Card(1, 1), Card(1, 2), Card(4, 3), Card(4, 4)
             ]
@@ -43,3 +43,15 @@ class TestPutinHandStep():
         assert reveal.count == 2
         assert reveal.card_list[0].uniq_id == 3
         assert reveal.card_list[1].uniq_id == 4
+
+    def test_process_log_1(self, make_log_manager):
+        game = self.get_game(pilename=PileName.LOOK)
+        game.log_manager = make_log_manager(
+            "A puts 星屑, 星屑 into their hand from their look."
+        )
+        reveal = game.players[0].pile[PileName.LOOK]
+        hand = game.players[0].pile[PileName.HAND]
+        step = PutinHandStep(0, 0, [1, 1], from_pilename=PileName.LOOK)
+        step.process(game)
+        assert str(hand) == "[1-1,1-2]"
+        assert str(reveal) == "[4-3,4-4]"

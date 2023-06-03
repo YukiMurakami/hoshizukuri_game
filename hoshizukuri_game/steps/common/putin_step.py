@@ -4,6 +4,7 @@ Steps for put in hand cards.
 from __future__ import annotations
 from typing import List
 from ...models.pile import PileName
+from ...models.log import LogCondition, Command
 from .card_move_step import CardMoveStep
 
 
@@ -41,3 +42,10 @@ class PutinHandStep(CardMoveStep):
                     n]) for n in range(len(self.uniq_ids))]
             )
         )
+
+    def _get_log_condition(self):
+        log_condition = LogCondition(
+            Command.PUT_HAND_FROM_LOOK, self.player_id, self.depth,
+            card_ids=self.card_ids
+        )
+        return log_condition
