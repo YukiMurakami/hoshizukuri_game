@@ -714,7 +714,7 @@ class TestCleanupStep:
         )
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
-            UpdateTurnStep, DrawStep, DiscardStep, DiscardStep
+            UpdateTurnStep, DrawStep, DiscardStep
         ]
         next_steps[1].count == 1
         assert game.phase == Phase.CLEAN_UP
@@ -739,7 +739,7 @@ class TestCleanupStep:
         )
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
-            UpdateTurnStep, CleanupDiscardHandStep, DiscardStep, DiscardStep
+            UpdateTurnStep, CleanupDiscardHandStep, DiscardStep
         ]
         assert game.phase == Phase.CLEAN_UP
 
