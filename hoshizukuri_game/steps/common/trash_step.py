@@ -9,6 +9,7 @@ from ..abstract_step import AbstractStep
 from enum import Enum
 from ...models.card_condition import CardCondition
 from ...models.pile import PileName
+from ...models.log import LogCondition, Command
 from ..common.card_move_step import CardMoveStep, select_process
 
 
@@ -67,6 +68,19 @@ class TrashStep(CardMoveStep):
             )
         )
 
+    def _get_log_condition(self):
+        if self.from_pilename == PileName.HAND:
+            return LogCondition(
+                Command.TRASH_FROM_HAND, self.player_id, self.depth,
+                card_ids=self.card_ids
+            )
+        if self.from_pilename == PileName.FIELD:
+            return LogCondition(
+                Command.TRASH_FROM_PLAYAREA, self.player_id, self.depth,
+                card_ids=self.card_ids
+            )
+        return None
+
 
 def trash_select_process(
         game: Game, source_step: AbstractStep,
@@ -104,11 +118,17 @@ def trash_select_process(
             uniq_ids=uniq_ids,
             from_pilename=from_pilename
         )
+    command = Command.TRASH_FROM_HAND
+    log_condition = LogCondition(
+        command=command, player_id=source_step.player_id,
+        depth=source_step.depth
+    )
     return select_process(
         create_step,
         game, source_step, choice_name, count,
         from_pilename, to_pilename=PileName.TRASH,
         can_less=can_less, can_pass=can_pass,
+        log_condition=log_condition,
         card_condition=card_condition,
         next_step_callback=next_step_callback
     )

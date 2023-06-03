@@ -75,6 +75,18 @@ class TestTrashStep():
         assert trash.card_list[0].uniq_id == 1
         assert trash.card_list[1].uniq_id == 2
 
+    def test_process_log_1(self, make_log_manager):
+        game = self.get_hand4_game()
+        game.log_manager = make_log_manager(
+            "A trashes 星屑, 星屑 from their hand."
+        )
+        hand = game.players[0].pile[PileName.HAND]
+        trash = game.trash
+        step = TrashStep(0, 0, [1, 1])
+        step.process(game)
+        assert str(hand) == "[4-3,4-4]"
+        assert str(trash) == "[1-1,1-2]"
+
 
 class TestTrashSelectProcess():
     def game_and_step(self, card_list, from_pilename):
@@ -123,3 +135,15 @@ class TestTrashSelectProcess():
             trash_select_process(
                 game, step, "lurkertrash", 2, from_pilename=PileName.SUPPLY
             )
+
+    def test_trash_select_process_log_1(self, make_log_manager):
+        game, step = self.game_and_step(
+            [Card(1, 1), Card(4, 2)], PileName.HAND)
+        game.log_manager = make_log_manager(
+            "A trashes 星屑, 惑星 from their hand."
+        )
+        next_steps = trash_select_process(
+            game, step, "trash", 2, can_less=True,
+            next_step_callback=None
+        )
+        assert isinstance(next_steps[-1], TrashStep)
