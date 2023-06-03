@@ -36,6 +36,8 @@ def option_select_process(
     if len(candidates) == 1:
         assert candidates[0] in next_steps_dic
         return next_steps_dic[candidates[0]](game, params)
+    if game.log_manager is not None:
+        game.choice = source_step._log2choice(game, params)
     if game.choice == "" or not is_included_candidates(
             game.choice, candidates):
         source_step.candidates = candidates
