@@ -2,7 +2,10 @@
 Other utility methods.
 """
 from __future__ import annotations
-from typing import Union, List
+from typing import Union, List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..models.game import Game
+    from ..steps.abstract_step import AbstractStep
 from ..models.card import Card
 import itertools
 
@@ -119,3 +122,11 @@ def _make_permutation_without_itertools(candidates, count):
                 next_queue.append([next_list, next_candidates])
         queue = next_queue
     return [n[0] for n in queue]
+
+
+def call_choice_callback(
+        game: Game, candidates: List[str],
+        choice: str, step: AbstractStep):
+    if (hasattr(game, "choice_callback") and
+            game.choice_callback is not None):
+        game.choice_callback(game, candidates, choice, step)

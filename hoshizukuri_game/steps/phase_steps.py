@@ -27,7 +27,7 @@ from ..utils.card_util import (
     get_colors, get_cost, ids2uniq_ids, CardColor
 )
 from ..utils.other_util import (
-    make_combination
+    make_combination, call_choice_callback
 )
 from ..utils.choice_util import (
     cparsei,
@@ -137,6 +137,7 @@ class PlaySelectStep(AbstractStep):
         candidates = self._create_candidates(game)
         if game.log_manager is not None:
             game.choice = self._log2choice(game)
+            call_choice_callback(game, candidates, game.choice, self)
         if game.choice == "" or not is_included_candidates(
                 game.choice, candidates):
             self.candidates = candidates
@@ -238,6 +239,7 @@ class PlayCardSelectStep(AbstractStep):
             game.choice = candidates[0]
         if game.log_manager is not None:
             game.choice = self._log2choice(game)
+            call_choice_callback(game, candidates, game.choice, self)
         if game.choice == "" or not is_included_candidates(
                 game.choice, candidates):
             self.candidates = candidates
@@ -430,6 +432,7 @@ class GenerateSelectStep(AbstractStep):
         candidates = self._create_candidates(game)
         if game.log_manager is not None:
             game.choice = self._log2choice(game)
+            call_choice_callback(game, candidates, game.choice, self)
         if game.choice == "" or not is_included_candidates(
                 game.choice, candidates):
             self.candidates = candidates

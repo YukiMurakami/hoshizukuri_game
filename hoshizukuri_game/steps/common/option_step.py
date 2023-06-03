@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ...models.game import Game
 from ..abstract_step import AbstractStep
 from ...utils.choice_util import is_included_candidates
+from ...utils.other_util import call_choice_callback
 
 
 def option_select_process(
@@ -38,6 +39,7 @@ def option_select_process(
         return next_steps_dic[candidates[0]](game, params)
     if game.log_manager is not None:
         game.choice = source_step._log2choice(game, params)
+        call_choice_callback(game, candidates, game.choice, source_step)
     if game.choice == "" or not is_included_candidates(
             game.choice, candidates):
         source_step.candidates = candidates

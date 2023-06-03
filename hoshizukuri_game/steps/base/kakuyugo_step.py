@@ -10,6 +10,7 @@ from ...models.pile import PileName
 from ...models.log import LogCondition, Command
 from ...utils.choice_util import cparsell, is_included_candidates
 from ...utils.card_util import CardColor, get_colors, ids2uniq_ids
+from ...utils.other_util import call_choice_callback
 from ..common.trash_step import TrashStep
 
 
@@ -47,6 +48,7 @@ class KakuyugoStep(AbstractStep):
         candidates = self._create_candidates(game)
         if game.log_manager is not None:
             game.choice = self._log2choice(game)
+            call_choice_callback(game, candidates, game.choice, self)
         if game.choice == "" or not is_included_candidates(
                 game.choice, candidates):
             self.candidates = candidates

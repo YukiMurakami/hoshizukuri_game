@@ -62,6 +62,7 @@ class Game:
         self.triggers: List[Trigger] = []
         self.variables: Dict[VariableName, Variable] = {}
         self.log_manager: LogManager = None
+        self.choice_callback = None
 
     def make_card(self, card_id: int):
         """

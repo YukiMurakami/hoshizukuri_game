@@ -1,5 +1,8 @@
+from hoshizukuri_game.models.game import Game
+from hoshizukuri_game.steps.abstract_step import AbstractStep
 from hoshizukuri_game.utils.other_util import (
-    make_combination, make_permutation, get_enemy_ids
+    make_combination, make_permutation, get_enemy_ids,
+    call_choice_callback
 )
 from hoshizukuri_game.models.card import Card
 
@@ -61,3 +64,17 @@ class TestMakePermutation():
     def test_make_permutation5(self):
         result = make_permutation([1, 1, 3], 5, False)
         assert result == [[1, 1, 3], [1, 3, 1], [3, 1, 1]]
+
+
+class TestCallChoiceCallback():
+    def callback(self, game, candidates, choice, step):
+        assert candidates == ["aaa", "bbb"]
+        assert choice == "choice"
+
+    def test_call_choice_callback_1(self):
+        game = Game()
+        game.choice_callback = self.callback
+        candidates = ["aaa", "bbb"]
+        choice = "choice"
+        step = AbstractStep()
+        call_choice_callback(game, candidates, choice, step)

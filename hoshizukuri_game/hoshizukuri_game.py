@@ -53,7 +53,8 @@ class HoshizukuriGame:
             "candidates": candidates
         }
 
-    def simulate_with_log(self, log_filename: str, debug: bool = False):
+    def simulate_with_log(
+            self, log_filename: str, debug: bool = False):
         """
         Simulate transition of game status with log.
 
@@ -80,6 +81,7 @@ class HoshizukuriGame:
         for i in range(len(log_manager.get_names())):
             players.append(Player(i))
         game = Game()
+        game.choice_callback = self.choice_callback
         game.log_manager = log_manager
         game.set_players(players)
         supplys = log_manager.get_supplies()
@@ -89,7 +91,6 @@ class HoshizukuriGame:
                 supplys.remove(c)
         game.set_supply(supplys)
         game.set_initial_step()
-        # game.set_choice_callback(self.choice_callback)
         game.choice = ""
         candidates = []
         last_step = None

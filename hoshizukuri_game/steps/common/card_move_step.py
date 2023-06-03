@@ -11,7 +11,9 @@ from ...models.card import Card
 from ...models.card_condition import CardCondition, get_match_card_ids
 from ...models.log import InvalidLogException, LogCondition
 from ...utils.card_util import ids2cards, ids2uniq_ids
-from ...utils.other_util import make_combination, make_permutation
+from ...utils.other_util import (
+    make_combination, make_permutation, call_choice_callback
+)
 from ...utils.choice_util import cparsell, is_included_candidates
 from .shuffle_step import ReshuffleStep
 
@@ -342,6 +344,7 @@ def select_process(
         ] + previous_step_callback(card_ids, uniq_ids, game)
     if game.log_manager is not None:
         game.choice = _log2choice()
+        call_choice_callback(game, candidates, game.choice, source_step)
         if game.choice != "" and game.choice not in candidates:
             if can_less:
                 game.choice = ""

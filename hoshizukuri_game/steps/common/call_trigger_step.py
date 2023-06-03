@@ -23,6 +23,7 @@ from ...models.variable import (
 )
 from ...models.log import InvalidLogException
 from ...utils.choice_util import cparses
+from ...utils.other_util import call_choice_callback
 
 
 class CallTriggerStep(AbstractStep):
@@ -131,6 +132,7 @@ class _TriggerSelectStep(AbstractStep):
                 game.choice = self.candidates[0]
             elif game.log_manager is not None:
                 game.choice = self._log2choice(game, all_can_pass)
+                call_choice_callback(game, self.candidates, game.choice, self)
         if game.choice == "":
             return [self]
         else:
