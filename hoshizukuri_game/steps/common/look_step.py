@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ...models.game import Game
 from ..abstract_step import AbstractStep
 from ...models.pile import PileName
+from ...models.log import LogCondition, Command
 from .card_move_step import CardMoveStep
 
 
@@ -56,4 +57,10 @@ class LookStep(CardMoveStep):
                 ["%d-%d" % (self.card_ids[n], self.uniq_ids[
                     n]) for n in range(len(self.uniq_ids))]
             )
+        )
+
+    def _get_log_condition(self):
+        return LogCondition(
+            Command.LOOK_FROM_DECK,
+            self.player_id, self.depth
         )
