@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ...models.game import Game
 from ..abstract_step import AbstractStep
 from ...models.pile import PileName
+from ...models.log import LogCondition, Command
 from ..common.look_step import LookStep
 from ..common.option_step import option_select_process
 from ..common.discard_step import DiscardStep
@@ -93,3 +94,13 @@ class IzumiSelectStep(AbstractStep):
             "%d:izumi:hand" % self.player_id,
             "%d:izumi:discard" % self.player_id
         ]
+
+    def _log2choice(self, game: Game, params: Dict[Any]):
+        if not game.log_manager.has_logs():
+            return game.choice
+        log = game.log_manager.get_nextlog(LogCondition(
+            Command.PUT_HAND_FROM_LOOK, self.player_id, depth=self.depth
+        ))
+        if log is not None:
+            return "%d:izumi:hand" % self.player_id
+        return "%d:izumi:discard" % self.player_id

@@ -81,3 +81,36 @@ class TestIzumiSelectStep():
         game.choice = "0:izumi:discard"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [DiscardStep]
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        step = IzumiSelectStep(0, 0, 0)
+        game = self.get_game([Card(1, 1)])
+        game.log_manager = make_log_manager(
+            "A discards 星屑 from their look."
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [DiscardStep]
+
+    def test_process_log_2(self, get_step_classes, make_log_manager):
+        step = IzumiSelectStep(0, 0, 0)
+        game = self.get_game([Card(1, 1)])
+        game.log_manager = make_log_manager(
+            "A puts 星屑 into their hand from their look."
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [PutinHandStep]
+
+    def test_process_log_3(
+            self, get_step_classes, is_equal_candidates, make_log_manager):
+        step = IzumiSelectStep(0, 0, 0)
+        game = self.get_game([Card(1, 1)])
+        game.log_manager = make_log_manager("")
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [IzumiSelectStep]
+        assert is_equal_candidates(
+            next_steps[0].get_candidates(game),
+            [
+                "0:izumi:hand#0",
+                "0:izumi:discard#0"
+            ]
+        )
