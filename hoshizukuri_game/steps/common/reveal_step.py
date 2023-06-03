@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ...models.game import Game
 from ..abstract_step import AbstractStep
 from ...models.pile import PileName
+from ...models.log import LogCondition, Command, InvalidLogException
 from .card_move_step import CardMoveStep
 from ...utils.card_util import ids2uniq_ids
 
@@ -59,6 +60,12 @@ class RevealStep(CardMoveStep):
             )
         )
 
+    def _get_log_condition(self):
+        return LogCondition(
+            Command.REVEAL_FROM_DECK,
+            self.player_id, self.depth
+        )
+
 
 class RevealAllHandStep(AbstractStep):
     """
@@ -84,6 +91,14 @@ class RevealAllHandStep(AbstractStep):
     def process(self, game: Game):
         self.card_ids = [n.id for n in game.players[
             self.player_id].pile[PileName.HAND].card_list]
+        if game.log_manager is not None:
+            log_condition = LogCondition(
+                command=Command.REVEAL_ALL_HAND, player_id=self.player_id,
+                depth=self.depth, card_ids=self.card_ids
+            )
+            log = game.log_manager.check_nextlog_and_pop(log_condition)
+            if log is None:
+                raise InvalidLogException(game, log_condition)
         self.uniq_ids = ids2uniq_ids(
             game.players[self.player_id].pile[PileName.HAND],
             self.card_ids, game

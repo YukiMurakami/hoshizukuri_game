@@ -1,10 +1,12 @@
 from hoshizukuri_game.models.card import Card
+from hoshizukuri_game.models.log import InvalidLogException
 from hoshizukuri_game.models.pile import Pile, PileName, PileType
 from hoshizukuri_game.models.player import Player
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.steps.common.reveal_step import (
     RevealStep, RevealAllHandStep
 )
+import pytest
 
 
 class TestRevealStep():
@@ -50,6 +52,25 @@ class TestRevealStep():
         assert str(deck) == "[1-3,4-4]"
         assert str(reveal) == "[1-1,1-2]"
 
+    def test_process_log_1(self, make_log_manager):
+        game = Game()
+        game.set_players([Player(0)])
+        game.players[0].pile[PileName.DECK] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(1, 3), Card(4, 4)
+            ]
+        )
+        game.log_manager = make_log_manager(
+            "A reveals 星屑, 星屑 from their deck."
+        )
+        deck = game.players[0].pile[PileName.DECK]
+        reveal = game.players[0].pile[PileName.REVEAL]
+        step = RevealStep(0, 0, count=2, from_pilename=PileName.DECK)
+        next_steps = step.process(game)
+        next_steps = next_steps[0].process(game)
+        assert str(deck) == "[1-3,4-4]"
+        assert str(reveal) == "[1-1,1-2]"
+
 
 class TestRevealAllHandStep():
     def test_str1(self):
@@ -75,3 +96,33 @@ class TestRevealAllHandStep():
         step = RevealAllHandStep(0, 0)
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        game = Game()
+        game.set_players([Player(0)])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(1, 3), Card(4, 4)
+            ]
+        )
+        game.log_manager = make_log_manager(
+            "A reveals their hand: 星屑, 星屑, 星屑, 惑星."
+        )
+        step = RevealAllHandStep(0, 0)
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+
+    def test_process_log_2(self, get_step_classes, make_log_manager):
+        game = Game()
+        game.set_players([Player(0)])
+        game.players[0].pile[PileName.HAND] = Pile(
+            PileType.LIST, card_list=[
+                Card(1, 1), Card(1, 2), Card(1, 3), Card(4, 4)
+            ]
+        )
+        game.log_manager = make_log_manager(
+            "A reveals their hand: 星屑, 星屑."
+        )
+        step = RevealAllHandStep(0, 0)
+        with pytest.raises(InvalidLogException):
+            step.process(game)
