@@ -28,6 +28,7 @@ class Command(Enum):
     DISCARD_FROM_LOOK = "<PLAYER> discards <CARDS> from their look."
     LOOK_FROM_DECK = "<PLAYER> looks <CARDS> from their deck."
     REVEAL_FROM_DECK = "<PLAYER> reveals <CARDS> from their deck."
+    REVEAL_ALL_HAND = "<PLAYER> reveals their hand: <CARDS>."
     PUT_HAND_FROM_LOOK = (
         "<PLAYER> puts <CARDS> into their hand from their look."
     )
