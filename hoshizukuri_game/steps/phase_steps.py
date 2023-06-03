@@ -385,7 +385,7 @@ class GenerateSelectStep(AbstractStep):
             CleanupStep(self.player_id),
             GainStep(
                 self.player_id, self.depth, card_id,
-                to_pilename=PileName.HAND),
+                to_pilename=PileName.HAND, create=True),
             AddStarflakeStep(self.player_id, self.depth, cost.cost * -1)
         ]
 

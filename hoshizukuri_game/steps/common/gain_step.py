@@ -10,6 +10,7 @@ from ..abstract_step import AbstractStep
 from ...steps.common.card_move_step import CardMoveStep, select_process
 from ...models.pile import PileName
 from ...models.card_condition import CardCondition
+from ...models.log import Command, LogCondition
 
 
 class GainBy(Enum):
@@ -29,6 +30,7 @@ class GainStep(CardMoveStep):
         to_pilename (PileName, Optional): Gain cards will go.
         by (GainBy, Optional): What caused this gain.
         next_step_callback (Callable, Optional): After step, call this.
+        create (Boolean, Optional): True is for creating.
 
     Note:
         - call gain trigger step.
@@ -40,7 +42,8 @@ class GainStep(CardMoveStep):
             to_pilename: PileName = PileName.DISCARD,
             by: GainBy = GainBy.NORMAL,
             next_step_callback: Callable[
-                [List[int], List[int], Game], List[AbstractStep]] = None):
+                [List[int], List[int], Game], List[AbstractStep]] = None,
+            create: bool = False):
         assert from_pilename in [
             PileName.SUPPLY, PileName.TRASH]
         uniq_ids = []
@@ -52,6 +55,7 @@ class GainStep(CardMoveStep):
             uniq_ids=uniq_ids, count=None,
             next_step_callback=next_step_callback,
         )
+        self.create = create
 
     def _get_step_string(self):
         pilename = self.from_pilename.value
@@ -65,6 +69,24 @@ class GainStep(CardMoveStep):
             pilename,
             self.player_id, gain_str, to_pilename
         )
+
+    def _get_log_condition(self):
+        log_condition = LogCondition(
+            Command.CREATE, self.player_id, self.depth,
+            card_ids=self.card_ids
+        )
+        if not self.create:
+            if self.to_pilename == PileName.HAND:
+                log_condition = LogCondition(
+                    Command.GAIN_INTO_HAND, self.player_id, self.depth,
+                    card_ids=self.card_ids
+                )
+            if self.to_pilename == PileName.DISCARD:
+                log_condition = LogCondition(
+                    Command.GAIN_INTO_DISCARD, self.player_id, self.depth,
+                    card_ids=self.card_ids
+                )
+        return log_condition
 
 
 def gain_select_process(
@@ -109,11 +131,19 @@ def gain_select_process(
             to_pilename=to_pilename,
             next_step_callback=next_step_callback
         )
+    command = Command.GAIN_INTO_HAND
+    if to_pilename == PileName.DISCARD:
+        command = Command.GAIN_INTO_DISCARD
+    log_condition = LogCondition(
+        command=command, player_id=source_step.player_id,
+        depth=source_step.depth
+    )
     return select_process(
         create_step,
         game, source_step, choice_name, 1,
         from_pilename, to_pilename=to_pilename,
         select_player_id=select_player_id,
+        log_condition=log_condition,
         can_less=can_pass, can_pass=can_pass,
         card_condition=condition
     )

@@ -15,7 +15,7 @@ from hoshizukuri_game.utils.card_util import CardType
 class TestGainStep():
     def test_str_1(self):
         step = GainStep(0, 1, 2)
-        assert str(step) == "1:gain:supply:0:2:discard"
+        assert str(step) == "1:gain:supply:0::discard"
 
     def test_str_2(self):
         step = GainStep(0, 1, 2, uniq_id=10, from_pilename=PileName.TRASH)
@@ -59,6 +59,28 @@ class TestGainStep():
         assert get_step_classes(next_steps) == []
         assert str(game.trash) == "[]"
         assert str(game.players[0].pile[PileName.DISCARD]) == "[5-2]"
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        game = self.get_game()
+        game.log_manager = make_log_manager(
+            "A gains 衛星 into their hand."
+        )
+        step = GainStep(0, 0, 3, to_pilename=PileName.HAND)
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+        assert str(game.supply[3]) == "{3:1}"
+        assert str(game.players[0].pile[PileName.HAND]) == "[3-1]"
+
+    def test_process_log_2(self, get_step_classes, make_log_manager):
+        game = self.get_game()
+        game.log_manager = make_log_manager(
+            "A creates 衛星."
+        )
+        step = GainStep(0, 0, 3, to_pilename=PileName.HAND, create=True)
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []
+        assert str(game.supply[3]) == "{3:1}"
+        assert str(game.players[0].pile[PileName.HAND]) == "[3-1]"
 
 
 class TestGainSelectProcess():
@@ -143,3 +165,18 @@ class TestGainSelectProcess():
                 "0:gain:0#0",
             ]
         )
+
+    def test_gain_select_process_log_1(
+            self, get_step_classes, make_log_manager):
+        game = self.get_game()
+        game.log_manager = make_log_manager(
+            "A gains 衛星 into their discard."
+        )
+        step = AbstractStep()
+        step.player_id = 0
+        next_steps = gain_select_process(
+            game, step, "gain", None,
+            can_pass=False
+        )
+        assert get_step_classes(next_steps) == [GainStep]
+        assert game.choice == ""
