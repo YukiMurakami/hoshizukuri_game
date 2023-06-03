@@ -24,6 +24,8 @@ from hoshizukuri_game.models.turn import Phase, Turn, TurnType
 from hoshizukuri_game.models.game import Game
 from hoshizukuri_game.models.player import Player
 from hoshizukuri_game.utils.card_util import get_card_id
+from hoshizukuri_game.models.log import InvalidLogException
+import pytest
 
 
 class TestTurnStartStep:
@@ -43,6 +45,33 @@ class TestTurnStartStep:
         assert game.turn.turn_type == TurnType.NORMAL
         assert get_step_classes(next_steps) == [PlaySelectStep]
 
+    def test_process_log(self, get_step_classes, make_log_manager):
+        step = TurnStartStep(0, Turn(1, 0, 0, TurnType.NORMAL))
+        game = Game()
+        game.log_manager = make_log_manager(
+            "Turn - A."
+        )
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.turn = Turn(0, -1, 1, TurnType.NORMAL)
+        next_steps = step.process(game)
+        assert game.turn.turn == 1
+        assert game.turn.player_id == 0
+        assert game.turn.turn_type == TurnType.NORMAL
+        assert get_step_classes(next_steps) == [PlaySelectStep]
+
+    def test_process_log_error(self, get_step_classes, make_log_manager):
+        step = TurnStartStep(0, Turn(1, 0, 0, TurnType.NORMAL))
+        game = Game()
+        game.log_manager = make_log_manager(
+            "A draws 星屑."
+        )
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.turn = Turn(0, -1, 1, TurnType.NORMAL)
+        with pytest.raises(InvalidLogException):
+            step.process(game)
+
 
 class TestPrepareFirstDeckStep:
     def test_str(self):
@@ -61,6 +90,15 @@ class TestPrepareFirstDeckStep:
         game = self.get_base_game()
         step.process(game)
         assert game.players[0].pile[PileName.DISCARD].count == 7
+
+    def test_process_log(self, make_log_manager):
+        step = PrepareFirstDeckStep(0)
+        game = self.get_base_game()
+        game.log_manager = make_log_manager(
+            "A starts with 10 星屑."
+        )
+        step.process(game)
+        assert game.players[0].pile[PileName.DISCARD].count == 10
 
 
 class TestPlaySelectStep:
@@ -175,6 +213,61 @@ class TestPlaySelectStep:
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [OrbitAdvanceStep]
 
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        step = PlaySelectStep(0)
+        game = self.get_game([
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
+        ])
+        game.log_manager = make_log_manager(
+            "A plays 炎."
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlayCardSelectStep,
+            PlayStep
+        ]
+
+    def test_process_log_2(
+            self, get_step_classes, make_log_manager, is_equal_candidates):
+        step = PlaySelectStep(0)
+        R1 = get_card_id("honow")
+        R2 = get_card_id("funka")
+        N = get_card_id("hoshikuzu")
+        game = self.get_game([
+            Card(R1, 0),
+            Card(R2, 1),
+            Card(N, 2),
+        ])
+        game.log_manager = make_log_manager(
+            ""
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [PlaySelectStep]
+        assert is_equal_candidates(
+            next_steps[0].get_candidates(game),
+            [
+                "0:playset:%d,%d#0" % (R1, R2),
+                "0:playset:%d#0" % (R1),
+                "0:playset:%d#0" % (R2),
+                "0:playset:%d#0" % (N)
+            ]
+        )
+
+    def test_process_log_error(self, make_log_manager):
+        step = PlaySelectStep(0)
+        game = self.get_game([
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
+        ])
+        game.log_manager = make_log_manager(
+            "A draws 炎."
+        )
+        with pytest.raises(InvalidLogException):
+            step.process(game)
+
 
 class TestPlayCardSelectStep:
     def test_str(self):
@@ -249,6 +342,57 @@ class TestPlayCardSelectStep:
             PlayCardSelectStep, PlayStep
         ]
         assert next_steps[1].card_ids == [N]
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        step = PlayCardSelectStep(0)
+        game = self.get_game([[
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
+        ]])
+        game.log_manager = make_log_manager(
+            "A resolves the effects of 炎."
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlayCardSelectStep, PlayStep
+        ]
+        assert next_steps[1].card_ids == [get_card_id("honow")]
+
+    def test_process_log_2(
+            self, get_step_classes, is_equal_candidates, make_log_manager):
+        step = PlayCardSelectStep(0)
+        game = self.get_game([[
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
+        ]])
+        game.log_manager = make_log_manager("")
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            PlayCardSelectStep
+        ]
+        assert is_equal_candidates(
+            step.get_candidates(game),
+            [
+                "0:play:%d#0" % get_card_id("hoshikuzu"),
+                "0:play:%d#0" % get_card_id("funka"),
+                "0:play:%d#0" % get_card_id("honow")
+            ]
+        )
+
+    def test_process_log_3(self, make_log_manager):
+        step = PlayCardSelectStep(0)
+        game = self.get_game([[
+            Card(get_card_id("honow"), 0),
+            Card(get_card_id("funka"), 1),
+            Card(get_card_id("hoshikuzu"), 2),
+        ]])
+        game.log_manager = make_log_manager(
+            "A draws 炎."
+        )
+        with pytest.raises(InvalidLogException):
+            step.process(game)
 
 
 class TestPlaysetEndStep:
@@ -403,14 +547,57 @@ class TestOrbitAdvanceStep:
         assert game.players[3].orbit == 25
         assert game.phase == Phase.ORBIT
 
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        step = OrbitAdvanceStep(0)
+        game = Game()
+        game.log_manager = make_log_manager(
+            "A changes the number of orbits from 15 to 17."
+        )
+        game.phase = Phase.PLAY
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.players[0].orbit = 15
+        game.players[1].orbit = 17
+        game.players[0].tmp_orbit = 17
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1)],
+                [Card(1, 2)]
+            ]
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [GenerateSelectStep]
+        assert game.players[0].orbit == 17.1
+        assert game.phase == Phase.ORBIT
+
+    def test_process_log_error(self, get_step_classes, make_log_manager):
+        step = OrbitAdvanceStep(0)
+        game = Game()
+        game.log_manager = make_log_manager(
+            "A changes the number of orbits from 20 to 17."
+        )
+        game.phase = Phase.PLAY
+        game.set_players([Player(0), Player(1)])
+        game.set_supply([])
+        game.players[0].orbit = 15
+        game.players[1].orbit = 17
+        game.players[0].tmp_orbit = 17
+        game.players[0].pile[PileName.FIELD] = Pile(
+            PileType.LISTLIST, card_list=[
+                [Card(1, 1)],
+                [Card(1, 2)]
+            ]
+        )
+        with pytest.raises(InvalidLogException):
+            step.process(game)
+
 
 class TestGenerateSelectStep:
     def test_str(self):
         step = GenerateSelectStep(0)
         assert str(step) == "0:generateselect:0"
 
-    def test_process_1(self, get_step_classes, is_equal_candidates):
-        step = GenerateSelectStep(0)
+    def get_game(self):
         game = Game()
         game.phase = Phase.ORBIT
         game.set_players([Player(0), Player(1)])
@@ -419,6 +606,63 @@ class TestGenerateSelectStep:
             PileType.LISTLIST, card_list=[
                 [Card(1, 1), Card(2, 2), Card(2, 3), Card(7, 4)]
             ]
+        )
+        return game
+
+    def test_process_1(self, get_step_classes, is_equal_candidates):
+        step = GenerateSelectStep(0)
+        game = self.get_game()
+        next_steps = step.process(game)
+        assert game.starflake == 8
+        assert get_step_classes(next_steps) == [GenerateSelectStep]
+        assert game.phase == Phase.GENERATE
+        assert is_equal_candidates(
+            next_steps[0].get_candidates(game),
+            [
+                "0:generate:3#0",
+                "0:generate:4#0",
+                "0:generate:0#0",
+            ]
+        )
+
+    def test_process_2(self, get_step_classes):
+        step = GenerateSelectStep(0)
+        game = self.get_game()
+        game.choice = "0:generate:4"
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            CleanupStep, GainStep, AddStarflakeStep
+        ]
+        assert game.phase == Phase.GENERATE
+        assert next_steps[1].card_ids == [4]
+
+    def test_process_3(self, get_step_classes):
+        step = GenerateSelectStep(0)
+        game = self.get_game()
+        game.choice = "0:generate:0"
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [CleanupStep]
+        assert game.phase == Phase.GENERATE
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        step = GenerateSelectStep(0)
+        game = self.get_game()
+        game.log_manager = make_log_manager(
+            "A creates 惑星."
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [
+            CleanupStep, GainStep, AddStarflakeStep
+        ]
+        assert game.phase == Phase.GENERATE
+        assert next_steps[1].card_ids == [4]
+
+    def test_process_log_2(
+            self, get_step_classes, is_equal_candidates, make_log_manager):
+        step = GenerateSelectStep(0)
+        game = self.get_game()
+        game.log_manager = make_log_manager(
+            ""
         )
         next_steps = step.process(game)
         assert game.starflake == 8
@@ -433,39 +677,16 @@ class TestGenerateSelectStep:
             ]
         )
 
-    def test_process_2(self, get_step_classes, is_equal_candidates):
+    def test_process_log_3(self, get_step_classes, make_log_manager):
         step = GenerateSelectStep(0)
-        game = Game()
-        game.phase = Phase.ORBIT
-        game.set_players([Player(0), Player(1)])
-        game.set_supply([])
-        game.players[0].pile[PileName.FIELD] = Pile(
-            PileType.LISTLIST, card_list=[
-                [Card(1, 1), Card(2, 2), Card(2, 3), Card(7, 4)]
-            ]
+        game = self.get_game()
+        game.log_manager = make_log_manager(
+            "A draws 惑星."
         )
-        game.choice = "0:generate:4"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [
-            CleanupStep, GainStep, AddStarflakeStep
+            CleanupStep
         ]
-        assert game.phase == Phase.GENERATE
-        assert next_steps[1].card_ids == [4]
-
-    def test_process_3(self, get_step_classes, is_equal_candidates):
-        step = GenerateSelectStep(0)
-        game = Game()
-        game.phase = Phase.ORBIT
-        game.set_players([Player(0), Player(1)])
-        game.set_supply([])
-        game.players[0].pile[PileName.FIELD] = Pile(
-            PileType.LISTLIST, card_list=[
-                [Card(1, 1), Card(2, 2), Card(2, 3), Card(7, 4)]
-            ]
-        )
-        game.choice = "0:generate:0"
-        next_steps = step.process(game)
-        assert get_step_classes(next_steps) == [CleanupStep]
         assert game.phase == Phase.GENERATE
 
 

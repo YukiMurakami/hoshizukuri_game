@@ -18,6 +18,7 @@ from .common.call_trigger_step import CallTriggerStep
 from ..models.turn import Phase
 from ..models.pile import PileName, PileType
 from ..models.cost import Cost
+from ..models.log import InvalidLogException, LogCondition, Command
 from ..models.card_condition import (
     CardCondition,
     get_match_card_ids
@@ -64,6 +65,14 @@ class TurnStartStep(AbstractStep):
         game.turn = self.turn
         assert game.turn.player_id == self.player_id
         game.starflake = 0
+        if game.log_manager is not None:
+            log_condition = LogCondition(
+                command=Command.TURN_START, player_id=self.player_id,
+                depth=self.depth
+            )
+            log = game.log_manager.check_nextlog_and_pop(log_condition)
+            if log is None:
+                raise InvalidLogException(game, log_condition)
         return [PlaySelectStep(self.player_id)]
 
 
@@ -83,6 +92,15 @@ class PrepareFirstDeckStep(AbstractStep):
         return "%d:preparefirstdeck:%d" % (self.depth, self.player_id)
 
     def process(self, game: Game):
+        if game.log_manager is not None:
+            game.start_deck = []
+            for _ in range(100):
+                log = game.log_manager.check_nextlog_and_pop(
+                    LogCondition(
+                        Command.START_WITH, self.player_id, self.depth
+                    ))
+                if log is not None:
+                    game.start_deck += log.card_ids
         for card_id in game.start_deck:
             card = game.make_card(card_id)
             game.players[self.player_id].pile[PileName.DISCARD].push(
@@ -117,6 +135,8 @@ class PlaySelectStep(AbstractStep):
         if game.created:
             return [OrbitAdvanceStep(self.player_id)]
         candidates = self._create_candidates(game)
+        if game.log_manager is not None:
+            game.choice = self._log2choice(game)
         if game.choice == "" or not is_included_candidates(
                 game.choice, candidates):
             self.candidates = candidates
@@ -179,6 +199,20 @@ class PlaySelectStep(AbstractStep):
         return ["%d:%s:%s" % (self.player_id, command, ",".join(
             [str(n) for n in cand])) for cand in candidates]
 
+    def _log2choice(self, game: Game):
+        if not game.log_manager.has_logs():
+            return game.choice
+        log_condition = LogCondition(
+            Command.PLAY, self.player_id, depth=self.depth)
+        log = game.log_manager.get_nextlog(
+            log_condition
+        )
+        if log is None:
+            raise InvalidLogException(game, log_condition)
+        return "%d:playset:%s" % (
+            self.player_id, ",".join([str(n) for n in log.card_ids])
+        )
+
 
 class PlayCardSelectStep(AbstractStep):
     """
@@ -202,6 +236,8 @@ class PlayCardSelectStep(AbstractStep):
             return [PlaysetEndStep(self.player_id)]
         if len(candidates) == 1:
             game.choice = candidates[0]
+        if game.log_manager is not None:
+            game.choice = self._log2choice(game)
         if game.choice == "" or not is_included_candidates(
                 game.choice, candidates):
             self.candidates = candidates
@@ -235,6 +271,20 @@ class PlayCardSelectStep(AbstractStep):
             rest_id_uniq_ids.remove(id_uniq_id)
         return ["%d:play:%d" % (
             self.player_id, n[0]) for n in rest_id_uniq_ids]
+
+    def _log2choice(self, game: Game):
+        if not game.log_manager.has_logs():
+            return game.choice
+        log_condition = LogCondition(
+            Command.RESOLVE_EFFECT, self.player_id, depth=self.depth)
+        log = game.log_manager.get_nextlog(
+            log_condition
+        )
+        if log is None:
+            raise InvalidLogException(game, log_condition)
+        return "%d:play:%d" % (
+            self.player_id, log.card_id
+        )
 
 
 class PlaysetEndStep(AbstractStep):
@@ -314,6 +364,16 @@ class OrbitAdvanceStep(AbstractStep):
         return "%d:orbitadvance:%d" % (self.depth, self.player_id)
 
     def _advance(self, game: Game, next_orbit: float, e_player_id: int):
+        after = int(next_orbit)
+        before = int(game.players[e_player_id].orbit)
+        if game.log_manager is not None:
+            log_condition = LogCondition(
+                Command.CHANGE_ORBIT, e_player_id, self.depth,
+                numbers=[before, after]
+            )
+            log = game.log_manager.check_nextlog_and_pop(log_condition)
+            if log is None:
+                raise InvalidLogException(game, log_condition)
         next_orbit = int(next_orbit)
         add_float = 0
         for player_id in range(len(game.players)):
@@ -368,6 +428,8 @@ class GenerateSelectStep(AbstractStep):
         game.update_starflake()
         assert game.turn.player_id == self.player_id
         candidates = self._create_candidates(game)
+        if game.log_manager is not None:
+            game.choice = self._log2choice(game)
         if game.choice == "" or not is_included_candidates(
                 game.choice, candidates):
             self.candidates = candidates
@@ -398,6 +460,20 @@ class GenerateSelectStep(AbstractStep):
         generate_list += [0]  # pass
         return ["%d:generate:%d" % (self.player_id, n) for n in generate_list]
 
+    def _log2choice(self, game: Game):
+        if not game.log_manager.has_logs():
+            return game.choice
+        log_condition = LogCondition(
+            Command.CREATE, self.player_id, depth=self.depth)
+        log = game.log_manager.get_nextlog(
+            log_condition
+        )
+        if log is None:
+            return "%d:generate:0" % self.player_id
+        return "%d:generate:%d" % (
+            self.player_id, log.card_id
+        )
+
 
 class CleanupStep(AbstractStep):
     """
@@ -417,16 +493,21 @@ class CleanupStep(AbstractStep):
     def process(self, game: Game):
         game.phase = Phase.CLEAN_UP
         steps = []
+        card_ids = []
+        uniq_ids = []
         for card_list in reversed(game.players[
                 self.player_id].pile[PileName.FIELD].card_list):
-            steps.append(
+            for card in card_list:
+                card_ids.append(card.id)
+                uniq_ids.append(card.uniq_id)
+        if len(card_ids) > 0:
+            steps = [
                 DiscardStep(
                     self.player_id, self.depth,
-                    card_ids=[n.id for n in card_list],
-                    uniq_ids=[n.uniq_id for n in card_list],
+                    card_ids=card_ids, uniq_ids=uniq_ids,
                     from_pilename=PileName.FIELD
                 )
-            )
+            ]
         # draw up to 4 or discard down to 4.
         hand_count = game.players[self.player_id].pile[PileName.HAND].count
         draw_steps = []
