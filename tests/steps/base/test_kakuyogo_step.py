@@ -85,3 +85,63 @@ class TestKakuyugoStep():
         card = game.players[0].pile[PileName.FIELD].get_card(5)
         assert card.starflake == 1
         assert get_step_classes(next_steps) == []
+
+    def test_process_log_1(self, get_step_classes, make_log_manager):
+        step = KakuyugoStep(0, 0, 5)
+        game = self.get_game([
+            Card(1, 1), Card(2, 2),
+            Card(7, 3),
+            Card(10, 4)
+        ], [[Card(get_card_id("kakuyugo"), 5)]])
+        game.log_manager = make_log_manager(
+            "A trashes 星屑, 原始星, 森林 from their hand."
+        )
+        game.choice = "0:kakuyugotrash:1,7,10"
+        next_steps = step.process(game)
+        card = game.players[0].pile[PileName.FIELD].get_card(5)
+        assert card.starflake == 7
+        assert get_step_classes(next_steps) == [TrashStep]
+
+    def test_process_log_2(
+            self, get_step_classes, make_log_manager, is_equal_candidates):
+        step = KakuyugoStep(0, 0, 5)
+        game = self.get_game([
+            Card(1, 1), Card(2, 2),
+            Card(7, 3),
+            Card(10, 4)
+        ], [[Card(get_card_id("kakuyugo"), 5)]])
+        game.log_manager = make_log_manager(
+            ""
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [KakuyugoStep]
+        assert is_equal_candidates(
+            step.get_candidates(game),
+            [
+                "0:kakuyugotrash:#0",
+                "0:kakuyugotrash:1#0",
+                "0:kakuyugotrash:2#0",
+                "0:kakuyugotrash:7#0",
+                "0:kakuyugotrash:10#0",
+                "0:kakuyugotrash:1,7#0",
+                "0:kakuyugotrash:2,7#0",
+                "0:kakuyugotrash:1,10#0",
+                "0:kakuyugotrash:2,10#0",
+                "0:kakuyugotrash:7,10#0",
+                "0:kakuyugotrash:1,7,10#0",
+                "0:kakuyugotrash:2,7,10#0"
+            ]
+        )
+
+    def test_process_log_3(self, get_step_classes, make_log_manager):
+        step = KakuyugoStep(0, 0, 5)
+        game = self.get_game([
+            Card(1, 1), Card(2, 2),
+            Card(7, 3),
+            Card(10, 4)
+        ], [[Card(get_card_id("kakuyugo"), 5)]])
+        game.log_manager = make_log_manager(
+            "A draws 星屑."
+        )
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == []

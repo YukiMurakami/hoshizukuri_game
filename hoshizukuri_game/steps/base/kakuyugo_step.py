@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ...models.game import Game
 from ..abstract_step import AbstractStep
 from ...models.pile import PileName
+from ...models.log import LogCondition, Command
 from ...utils.choice_util import cparsell, is_included_candidates
 from ...utils.card_util import CardColor, get_colors, ids2uniq_ids
 from ..common.trash_step import TrashStep
@@ -44,6 +45,8 @@ class KakuyugoStep(AbstractStep):
             card.starflake = dic[0]
             return []
         candidates = self._create_candidates(game)
+        if game.log_manager is not None:
+            game.choice = self._log2choice(game)
         if game.choice == "" or not is_included_candidates(
                 game.choice, candidates):
             self.candidates = candidates
@@ -100,3 +103,17 @@ class KakuyugoStep(AbstractStep):
         candidates = sorted(candidates)
         return ["%d:%s:%s" % (self.player_id, command, ",".join(
             [str(n) for n in cand])) for cand in candidates]
+
+    def _log2choice(self, game: Game):
+        if not game.log_manager.has_logs():
+            return game.choice
+        log_condition = LogCondition(
+            Command.TRASH_FROM_HAND, self.player_id, depth=self.depth)
+        log = game.log_manager.get_nextlog(
+            log_condition
+        )
+        if log is None:
+            return "%d:kakuyugotrash:" % self.player_id
+        return "%d:kakuyugotrash:%s" % (
+            self.player_id, ",".join([str(n) for n in log.card_ids])
+        )
