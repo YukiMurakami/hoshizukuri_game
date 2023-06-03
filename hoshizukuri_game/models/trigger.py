@@ -137,7 +137,7 @@ def _get_called_triggers_with_activate(
                     if value not in get_variable(
                             game, VariableName.DONE_TRIGGER_LIST, list):
                         trigger.step.trigger_activate = target_activate
-                        trigger.step.depth = source_step.depth + 1
+                        trigger.step.depth = source_step.depth
                         possible_triggers.append(trigger)
     return possible_triggers
 
