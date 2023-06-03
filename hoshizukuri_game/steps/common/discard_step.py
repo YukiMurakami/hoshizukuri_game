@@ -9,6 +9,7 @@ from ..abstract_step import AbstractStep
 from ...models.pile import PileName
 from ...models.card_condition import CardCondition
 from .card_move_step import CardMoveStep, select_process
+from ...models.log import LogCondition, Command
 
 
 class DiscardStep(CardMoveStep):
@@ -62,6 +63,24 @@ class DiscardStep(CardMoveStep):
             )
         )
 
+    def _get_log_condition(self):
+        if self.from_pilename == PileName.FIELD:
+            return LogCondition(
+                Command.DISCARD_FROM_PLAYAREA, self.player_id, self.depth,
+                card_ids=self.card_ids
+            )
+        if self.from_pilename == PileName.HAND:
+            return LogCondition(
+                Command.DISCARD_FROM_HAND, self.player_id, self.depth,
+                card_ids=self.card_ids
+            )
+        if self.from_pilename == PileName.LOOK:
+            return LogCondition(
+                Command.DISCARD_FROM_LOOK, self.player_id, self.depth,
+                card_ids=self.card_ids
+            )
+        return None
+
 
 def discard_select_process(
         game: Game, source_step: AbstractStep,
@@ -99,11 +118,17 @@ def discard_select_process(
             uniq_ids=uniq_ids,
             from_pilename=from_pilename
         )
+    command = Command.DISCARD_FROM_HAND
+    log_condition = LogCondition(
+        command=command, player_id=source_step.player_id,
+        depth=source_step.depth
+    )
     return select_process(
         create_step,
         game, source_step, choice_name, count,
         from_pilename, to_pilename=PileName.DISCARD,
         can_less=can_less, can_pass=can_pass,
+        log_condition=log_condition,
         next_step_callback=next_step_callback,
         card_condition=card_condition
     )

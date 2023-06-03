@@ -37,11 +37,11 @@ class TestDiscardStep():
         next_steps[0].process(game)
         assert str(next_steps[0]) == "0:discardfromdeck:0:1-1,1-2"
 
-    def get_hand4_game(self):
+    def get_game(self, pilename=PileName.HAND):
         game = Game()
         game.set_players([Player(0), Player(1)])
         game.set_supply([])
-        game.players[0].pile[PileName.HAND] = Pile(
+        game.players[0].pile[pilename] = Pile(
             PileType.LIST, card_list=[
                 Card(1, 1), Card(1, 2), Card(4, 3), Card(4, 4)
             ]
@@ -49,7 +49,7 @@ class TestDiscardStep():
         return game
 
     def test_process1(self):
-        game = self.get_hand4_game()
+        game = self.get_game()
         hand = game.players[0].pile[PileName.HAND]
         discard = game.players[0].pile[PileName.DISCARD]
         step = DiscardStep(0, 0, [1, 1])
@@ -60,6 +60,30 @@ class TestDiscardStep():
         assert discard.count == 2
         assert discard.card_list[0].uniq_id == 1
         assert discard.card_list[1].uniq_id == 2
+
+    def test_process_log_1(self, make_log_manager):
+        game = self.get_game()
+        game.log_manager = make_log_manager(
+            "A discards 星屑, 星屑 from their hand."
+        )
+        hand = game.players[0].pile[PileName.HAND]
+        discard = game.players[0].pile[PileName.DISCARD]
+        step = DiscardStep(0, 0, [1, 1])
+        step.process(game)
+        assert str(hand) == "[4-3,4-4]"
+        assert str(discard) == "[1-1,1-2]"
+
+    def test_process_log_2(self, make_log_manager):
+        game = self.get_game(pilename=PileName.LOOK)
+        game.log_manager = make_log_manager(
+            "A discards 星屑, 星屑 from their look."
+        )
+        look = game.players[0].pile[PileName.LOOK]
+        discard = game.players[0].pile[PileName.DISCARD]
+        step = DiscardStep(0, 0, [1, 1], from_pilename=PileName.LOOK)
+        step.process(game)
+        assert str(look) == "[4-3,4-4]"
+        assert str(discard) == "[1-1,1-2]"
 
 
 class TestDiscardSelectProcess():
@@ -95,6 +119,19 @@ class TestDiscardSelectProcess():
         game, step = self.game_and_step(
             [Card(1, 1), Card(4, 2)], PileName.HAND)
         game.choice = "0:discard:1,4"
+        next_steps = discard_select_process(
+            game, step, "discard", 2, can_less=True,
+            next_step_callback=None
+        )
+        assert isinstance(next_steps[-1], DiscardStep)
+        assert next_steps[-1].card_ids == [1, 4]
+
+    def test_discard_select_process_log_1(self, make_log_manager):
+        game, step = self.game_and_step(
+            [Card(1, 1), Card(4, 2)], PileName.HAND)
+        game.log_manager = make_log_manager(
+            "A discards 星屑, 惑星 from their hand."
+        )
         next_steps = discard_select_process(
             game, step, "discard", 2, can_less=True,
             next_step_callback=None
