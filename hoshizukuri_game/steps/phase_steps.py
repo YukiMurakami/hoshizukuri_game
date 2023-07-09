@@ -443,7 +443,7 @@ class GenerateSelectStep(AbstractStep):
         game.choice = ""
         assert command in ["generate"]
         assert player_id == self.player_id
-        if card_id == 0:
+        if card_id is None:
             return [CleanupStep(self.player_id)]
         cost = get_cost(card_id, game)
         return [
@@ -460,8 +460,10 @@ class GenerateSelectStep(AbstractStep):
             CardCondition(le_cost=Cost(game.starflake)),
             game, uniq_flag=True
         )
-        generate_list += [0]  # pass
-        return ["%d:generate:%d" % (self.player_id, n) for n in generate_list]
+        return ["%d:generate:%d" % (
+            self.player_id, n) for n in generate_list] + [
+            "%d:generate:" % self.player_id
+        ]
 
     def _log2choice(self, game: Game):
         if not game.log_manager.has_logs():
@@ -472,7 +474,7 @@ class GenerateSelectStep(AbstractStep):
             log_condition
         )
         if log is None:
-            return "%d:generate:0" % self.player_id
+            return "%d:generate:" % self.player_id
         return "%d:generate:%d" % (
             self.player_id, log.card_id
         )

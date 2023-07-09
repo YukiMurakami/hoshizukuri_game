@@ -621,7 +621,7 @@ class TestGenerateSelectStep:
             [
                 "0:generate:3#0",
                 "0:generate:4#0",
-                "0:generate:0#0",
+                "0:generate:#0",
             ]
         )
 
@@ -639,7 +639,7 @@ class TestGenerateSelectStep:
     def test_process_3(self, get_step_classes):
         step = GenerateSelectStep(0)
         game = self.get_game()
-        game.choice = "0:generate:0"
+        game.choice = "0:generate:"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == [CleanupStep]
         assert game.phase == Phase.GENERATE
@@ -673,7 +673,7 @@ class TestGenerateSelectStep:
             [
                 "0:generate:3#0",
                 "0:generate:4#0",
-                "0:generate:0#0",
+                "0:generate:#0",
             ]
         )
 
