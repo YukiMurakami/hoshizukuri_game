@@ -48,3 +48,16 @@ class TestBlackholeStep():
         game = self.get_game([Card(7, 3)])
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
+
+    def test_process_4(self, get_step_classes, is_equal_candidates):
+        step = BlackholeStep(0, 0, 0)
+        game = self.get_game([Card(3, 1)])
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [BlackholeStep]
+        assert is_equal_candidates(
+            step.get_candidates(game),
+            [
+                "0:blackholeaddplay:#0",
+                "0:blackholeaddplay:3#0"
+            ]
+        )

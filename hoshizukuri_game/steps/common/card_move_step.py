@@ -275,8 +275,6 @@ def select_process(
             )
         if can_less is False and can_pass is False:
             raise InvalidLogException(game, log_condition)
-        if count == 1:
-            return "%d:%s:0" % (select_player_id, choice_name)
         return "%d:%s:" % (select_player_id, choice_name)
 
     def _create_candidates():
@@ -300,10 +298,6 @@ def select_process(
             )
         if count > 0 and can_less is False and can_pass:
             candidates.append([])
-        if count == 1:
-            for i in range(len(candidates)):
-                if candidates[i] == []:
-                    candidates[i] = [0]
         return ["%d:%s:%s" % (select_player_id, choice_name, ",".join(
             [str(a) for a in n])) for n in candidates]
 
@@ -325,7 +319,7 @@ def select_process(
         # auto
         card_ids = [
             int(n) for n in candidates[0].split(":")[2].split(",") if n != ""]
-        if len(card_ids) <= 0 or card_ids[0] == 0:
+        if len(card_ids) <= 0:
             return next_step_callback(
                     [], [], game) + [] + previous_step_callback([], [], game)
         uniq_ids = []

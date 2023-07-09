@@ -40,7 +40,7 @@ class TestIkaduchiStep():
     def test_process_no_trash(self, get_step_classes):
         step = IkaduchiStep(0, 0, 0)
         game = self.get_game([Card(1, 1), Card(4, 2)])
-        game.choice = "0:ikaduchitrash:0"
+        game.choice = "0:ikaduchitrash:"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
 

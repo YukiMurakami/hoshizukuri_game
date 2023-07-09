@@ -31,7 +31,7 @@ class TestSougenStep():
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:sougengain:0#0",
+                "0:sougengain:#0",
                 "0:sougengain:3#0",
                 "0:sougengain:%d#0" % get_card_id("izumi")
             ]

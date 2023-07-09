@@ -29,7 +29,7 @@ class TestMizuStep():
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:mizudiscard:0#0",
+                "0:mizudiscard:#0",
                 "0:mizudiscard:1#0",
                 "0:mizudiscard:2#0",
                 "0:mizudiscard:7#0"

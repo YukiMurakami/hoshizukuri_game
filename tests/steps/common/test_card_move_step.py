@@ -402,7 +402,7 @@ class TestSelectProcess():
     def test_select_process_3(self, get_step_classes):
         self.check(
             get_step_classes, 0, [Card(1, 1), Card(4, 2)],
-            choice="0:discard:0",
+            choice="0:discard:",
             expected_next_steps=[], can_less=True)
 
     def test_select_process_4(self, get_step_classes):
@@ -425,7 +425,7 @@ class TestSelectProcess():
             can_less=True,
             expected_next_steps=[AbstractStep],
             expected_candidates=[
-                "0:discard:1#0", "0:discard:4#0", "0:discard:0#0"])
+                "0:discard:1#0", "0:discard:4#0", "0:discard:#0"])
 
     def test_select_process_7(self, get_step_classes):
         self.check(
@@ -434,7 +434,7 @@ class TestSelectProcess():
             condition=CardCondition(type=CardType.STAR),
             expected_next_steps=[AbstractStep],
             expected_candidates=[
-                "0:discard:4#0", "0:discard:0#0"])
+                "0:discard:4#0", "0:discard:#0"])
 
     def test_select_process_8(self, get_step_classes):
         with pytest.raises(Exception):

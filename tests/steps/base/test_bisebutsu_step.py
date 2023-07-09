@@ -29,7 +29,7 @@ class TestBisebutsuStep():
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:bisebutsuaddplay:0#0",
+                "0:bisebutsuaddplay:#0",
                 "0:bisebutsuaddplay:3#0",
                 "0:bisebutsuaddplay:4#0"
             ]

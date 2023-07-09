@@ -162,7 +162,7 @@ class TestGainSelectProcess():
                 "0:gain:3#0",
                 "0:gain:4#0",
                 "0:gain:5#0",
-                "0:gain:0#0",
+                "0:gain:#0",
             ]
         )
 

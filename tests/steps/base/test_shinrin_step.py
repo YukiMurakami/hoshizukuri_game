@@ -29,7 +29,7 @@ class TestShinrinStep():
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:shinrinaddplay:0#0",
+                "0:shinrinaddplay:#0",
                 "0:shinrinaddplay:1#0",
                 "0:shinrinaddplay:2#0"
             ]

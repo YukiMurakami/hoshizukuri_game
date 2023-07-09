@@ -86,6 +86,21 @@ class TestKakuyugoStep():
         assert card.starflake == 1
         assert get_step_classes(next_steps) == []
 
+    def test_process_5(self, get_step_classes, is_equal_candidates):
+        step = KakuyugoStep(0, 0, 5)
+        game = self.get_game([
+            Card(1, 1)
+        ], [[Card(get_card_id("kakuyugo"), 5)]])
+        next_steps = step.process(game)
+        assert get_step_classes(next_steps) == [KakuyugoStep]
+        assert is_equal_candidates(
+            step.get_candidates(game),
+            [
+                "0:kakuyugotrash:#0",
+                "0:kakuyugotrash:1#0"
+            ]
+        )
+
     def test_process_log_1(self, get_step_classes, make_log_manager):
         step = KakuyugoStep(0, 0, 5)
         game = self.get_game([
