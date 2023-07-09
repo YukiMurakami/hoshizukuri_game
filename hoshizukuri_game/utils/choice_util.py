@@ -42,6 +42,8 @@ def cparsei(choice: str):
     """
     div = choice.split(":")
     assert len(div) == 3
+    if div[2] == "":
+        return int(div[0]), div[1], None
     return int(div[0]), div[1], int(div[2])
 
 

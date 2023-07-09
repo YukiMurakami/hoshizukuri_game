@@ -49,7 +49,7 @@ class ArashiStep(AbstractStep):
         game.choice = ""
         assert command in ["arashiindex"]
         assert player_id == self.player_id
-        if index == -1:
+        if index is None:
             return []
         card_ids = [n.id for n in game.players[
             self.player_id].pile[PileName.FIELD].card_list[index]]
@@ -69,9 +69,9 @@ class ArashiStep(AbstractStep):
             if len(cardlist) == 1 and i != len(field) - 1:
                 candidates.append(i)
         return [
-            "%d:arashiindex:%d" % (
-                self.player_id, n
-            ) for n in candidates + [-1]
+            "%d:arashiindex:%s" % (
+                self.player_id, str(n)
+            ) for n in candidates + [""]
         ]
 
     def _log2choice(self, game: Game):
@@ -83,14 +83,14 @@ class ArashiStep(AbstractStep):
             log_condition
         )
         if log is None:
-            return "%d:arashiindex:-1" % self.player_id
+            return "%d:arashiindex:" % self.player_id
         card_ids = log.card_ids
-        index = -1
+        index = ""
         for i, cardlist in enumerate(
                 game.players[self.player_id].pile[PileName.FIELD].card_list):
             if sorted([n.id for n in cardlist]) == sorted(card_ids):
-                index = i
+                index = str(i)
                 break
-        return "%d:arashiindex:%d" % (
+        return "%d:arashiindex:%s" % (
             self.player_id, index
         )

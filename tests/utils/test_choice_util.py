@@ -28,6 +28,12 @@ class TestChoiceUtil:
         assert command == "play"
         assert card_id == 8
 
+    def test_cparsei_2(self):
+        player_id, command, card_id = cparsei("1:play:")
+        assert player_id == 1
+        assert command == "play"
+        assert card_id is None
+
     def test_cparsell_1(self):
         player_id, command, card_ids, uniq_ids = cparsell("1:play:1-1,2-4")
         assert player_id == 1

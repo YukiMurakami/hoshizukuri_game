@@ -37,7 +37,7 @@ class TestArashiStep():
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:arashiindex:-1#0",
+                "0:arashiindex:#0",
                 "0:arashiindex:1#0",
                 "0:arashiindex:2#0"
             ]
@@ -70,7 +70,7 @@ class TestArashiStep():
                 [Card(9, 10)]
             ]
         )
-        game.choice = "0:arashiindex:-1"
+        game.choice = "0:arashiindex:"
         next_steps = step.process(game)
         assert get_step_classes(next_steps) == []
 
@@ -120,7 +120,7 @@ class TestArashiStep():
         assert is_equal_candidates(
             step.get_candidates(game),
             [
-                "0:arashiindex:-1#0",
+                "0:arashiindex:#0",
                 "0:arashiindex:1#0",
                 "0:arashiindex:2#0"
             ]
